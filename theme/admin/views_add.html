@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Views</title>
+  <link rel="stylesheet" href="/theme/admin/assets/css/style.css">
+  <script src="/theme/admin/assets/js/jquery.min.js"></script>
+  <script src="/theme/admin/assets/js/layer/layer.js"></script>
+  <script src="/theme/admin/assets/js/vue.js"></script>
+  <script src="/theme/admin/assets/js/vue-resource.js"></script>
+</head>
+<body>
+  <div id="App">
+    <form class="layui-form view-config" action="#">
+      <div class="layui-form-item">
+        <label class="layui-form-label">名称</label>
+        <div class="layui-input-block">
+          <input type="text" name="view_name" v-model="view_name" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <input type="checkbox" name="has_description" title="描述" v-model="has_description">描述
+          <input type="text" name="view_description" v-if="has_description" v-model="view_description" class="layui-input lay-hide">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">查询</label>
+        <div class="layui-input-inline">
+          <select name="view_table" lay-filter="view_table" v-model="view_table" @change="updateField">
+            <option value="">请选择表</option>
+            <option v-for="(table, index) in tables" :value="index">@{{ index }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item" pane="" v-if="view_table != ''">
+        <label class="layui-form-label">选择字段</label>
+        <div class="layui-input-block" v-if="fields">
+          <div v-for="(field, key) in fields">
+            <input type="checkbox" :name="'view_fields['+key+']'" :value="key" v-model="view_fields" :title="field.name">@{{ field.name }}
+          </div>
+        </div>
+      </div>
+
+      <div><label class="layui-form-label">格式化</label></div>
+
+      <button class="layui-btn layui-btn-primary layui-btn-mini" @click="setTextarea('htmllist', $event)">Html List</button>
+      <button class="layui-btn layui-btn-primary layui-btn-mini" @click="setTextarea('table', $event)">Table</button>
+      <button class="layui-btn layui-btn-primary layui-btn-mini" @click="setTextarea('none', $event)">Unformatted list</button>
+
+      <div><label class="layui-form-label" v-if="view_fields != ''">可用字段</label></div>
+
+      <button class="layui-btn layui-btn-primary layui-btn-mini" v-for="field in view_fields">@{{ field }}</button>
+
+      <div><label class="layui-form-label">模板</label></div>
+      <input type="radio" id="create_new_template" value="new" v-model="create_new_template">创建新模板
+      <input type="radio" id="create_new_template" value="exist" v-model="create_new_template">使用现成模板
+      <div class="layui-form-item" v-if="create_new_template == 'exist'">
+        <select name="view_table" lay-filter="view_template" v-model="view_template">
+          <option value="">请选择模板</option>
+          <option v-for="(template, index) in templates" :value="template">@{{ index }}</option>
+        </select>
+        <button class="layui-btn layui-btn-primary layui-btn-mini" @click="cleanLoadTemplates">刷新模板缓存</button>
+        <button class="layui-btn layui-btn-primary layui-btn-mini" @click="editThisTemplate">编辑该模板</button>
+      </div>
+
+      <div class="layui-form-item layui-form-text" v-if="show_editor">
+        <div><label class="layui-form-label">编辑模板</label></div>
+        <div class="layui-input-block vx-stage-container">
+          <textarea class="layui-textarea" rows="15" cols="15" v-model="template_content"></textarea>
+          <div class="vx-stage-north"></div>
+          <div class="vx-stage-west"></div>
+        </div>
+        <div v-if="create_new_template == 'exist'">
+          <input type="checkbox" name="overwrit_template" title="描述" v-model="overwrit_template">覆盖原模板文件
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" @click="saveView('final', $event)">保存</button>
+          <button type="reset">重置</button>
+        </div>
+      </div>
+    </form>
+    <div class="side-right">
+      <button class="layui-btn" @click="previewResult">预览</button>
+      <div class="preview-result" v-html="preview_result"></div>
+    </div>
+  </div>
+  <script src="/theme/admin/assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<?php
+
+use Hunter\Core\Templating\Blade\BladeCompiler;
+
+/**
+ * get all views
+ */
+function views_get_all() {
+  $list = array();
+  $query = db_select('variable', 'v');
+  $query->fields('v', array('value'));
+  $query->condition('name', 'views.view.%', 'LIKE');
+  $query->orderBy('name');
+  $result = $query->execute()->fetchCol();
+
+  foreach ($result as $item) {
+    $list[] = unserialize($item);
+  }
+
+  return $list;
+}
+
+/**
+ * get all templates
+ */
+function views_get_templates() {
+  $list = array();
+  $result = db_select('variable', 'v')
+  ->fields('v')
+  ->condition('name', 'views-view-%', 'LIKE')
+  ->orderBy('name')
+  ->execute()->fetchAllAssoc('name');
+
+  foreach ($result as $name => $item) {
+    $list[$name] = unserialize($item->value);
+  }
+
+  return $list;
+}
+
+/**
+ * get view by name
+ */
+ function get_view_byname($name) {
+     $view = db_select('variable', 'v')
+       ->fields('v', array('value'))
+       ->condition('name', $name)
+       ->execute()
+       ->fetchField();
+
+     return unserialize($view);
+ }
+
+
+function _views_internal_tables() {
+  if (module_exists('category')) {
+    $tables['category'] = array(
+      "name" => "category",
+      "provider" => "internal",
+      "join" => array(
+        "left" => array(
+          "table" => "news",
+          "field" => "nid"
+        ),
+        "right" => array(
+          "field" => "nid"
+        )
+      ),
+      "filters" => array(
+        "cid" => array(
+          'name' => "Category",
+          'list' => "views_handler_filter_cid",
+          'operator' => "views_handler_operator_andor",
+        )
+      )
+    );
+  }
+
+  $tables['users'] = array(
+    "name" => "users",
+    "provider" => "internal", // won't show up in external list.
+    "join" => array(
+      "left" => array(
+        "table" => "news",
+        "field" => "uid"
+      ),
+      "right" => array(
+        "field" => "uid"
+      ),
+    ),
+    "fields" => array(
+      "name" => array(
+        'name' => "User Name",
+        'sortable' => true,
+        'uid' => "uid",
+        'addlfields' => array("uid")
+      ),
+      "email" => array(
+        'name' => "User Email",
+        'sortable' => true,
+       ),
+      "status" => array(
+        'name' => "User Status",
+        'sortable' => true,
+      ),
+      "avatar" => array(
+        'name' => "User Avatar",
+      ),
+      "created" => array(
+        'name' => "User created",
+      ),
+      "accessed" => array(
+        'name' => "User accessed",
+      )
+    ),
+    "sorts" => array(
+      "name" => array('name' => "News Author Name")
+    ),
+    "filters" => array(
+      "uid" => array(
+        'name' => "News Author Name",
+        'operator' => "views_handler_operator_or",
+        'list' => "views_handler_filter_username"
+      ),
+      "anon" => array(
+        'field' => 'uid',
+        'name' => "News Author is Anonymous",
+        'operator' => "views_handler_operator_eqneq",
+        'list' => "views_handler_filter_useranon"
+      ),
+      "currentuid" => array(
+        'name' => "News Author is Current User",
+        'operator' => "views_handler_operator_eqneq",
+        'list' => "views_handler_filter_usercurrent",
+        'custom' => "views_handler_filter_usercurrent_custom",
+        'cacheable' => 'no', // for future use.
+      ),
+    )
+  );
+
+  $tables['users_roles'] = array(
+    "name" => "users_role",
+    "provider" => "internal", // won't show up in external list.
+    "join" => array(
+      "left" => array(
+        "table" => "News",
+        "field" => "uid"
+      ),
+      "right" => array(
+        "field" => "uid"
+      ),
+    ),
+    "fields" => array(
+      "name" => array(
+        'name' => "Node Author Name",
+        'handler' => 'views_handler_field_username',
+        'sortable' => true,
+        'uid' => "uid",
+        'addlfields' => array("uid")
+      ),
+    ),
+    "filters" => array(
+      "rid" => array(
+        'name' => "Author Role",
+        'operator' => "views_handler_operator_andor",
+        'list' => "views_handler_filter_role"
+      ),
+    )
+  );
+
+  return $tables;
+}
+
+function _views_get_tables() {
+  global $VIEWS_TABLES, $app;
+
+  if (!$VIEWS_TABLES) {
+    $VIEWS_TABLES = array_merge($app->getModuleHandle()->invokeAll('views_tables'), _views_internal_tables());
+  }
+  return $VIEWS_TABLES;
+}
+
+/**
+ * Embed a view using a PHP snippet.
+ */
+function views_get_view($name, $preview = false) {
+  if($preview){
+    $view = variable_get('views_view_temp_'.$name);
+  }else {
+    $view = variable_get('views_view_final_'.$name);
+  }
+
+  if(isset($view['view_query']) && isset($view['view_template'])){
+    $result = db_query($view['view_query'])->fetchAssoc();
+
+    if($result) {
+      $output = theme()->render($view['view_template'], $result);
+      return $output;
+    }
+  }
+  return false;
+}

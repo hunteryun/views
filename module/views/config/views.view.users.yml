@@ -1,0 +1,37 @@
+id: users
+label: 'User List'
+description: 'All user list.'
+base_table: user
+base_field: uid
+core: 1.x
+display:
+  default:
+    display_options:
+      style:
+        type: table
+      template_path: views.view.content.html
+      fields:
+        name:
+          id: name
+          table: users
+          field: name
+          relationship: uid
+          type: string
+        status:
+          id: status
+          table: users
+          field: status
+          type: boolean
+          settings:
+            format: custom
+            format_custom_true: Published
+            format_custom_false: Unpublished
+        created:
+          id: created
+          table: users
+          field: created
+          type: timestamp
+          settings:
+            date_format: short
+            custom_date_format: ''
+            timezone: ''

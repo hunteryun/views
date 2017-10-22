@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Views</title>
+  <link rel="stylesheet" href="/theme/admin/assets/layui/css/layui.css">
+  <link rel="stylesheet" href="/theme/admin/assets/css/style.css">
+</head>
+<body>
+  <button class="layui-btn  layui-btn-small layui-btn-danger" onclick="addView()">添加view</button>
+  <table class="layui-table" lay-skin="line">
+    <colgroup>
+      <col width="150">
+      <col width="150">
+      <col>
+      <col>
+    </colgroup>
+    <thead>
+      <tr>
+        <th>名称</th>
+        <th>机器名</th>
+        <th>描述</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if(!empty($list))
+      @foreach ($list as $v)
+      <tr>
+        <td>{{ $v['label'] }}</td>
+        <td>{{ $v['id'] }}</td>
+        <td>{{ $v['description'] }}</td>
+        <td>
+          <a class="layui-btn layui-btn-mini" onclick="editView('{{ $v['id'] }}')">编辑</a>
+          <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+        </td>
+      </tr>
+      @endforeach
+      @endif
+    </tbody>
+  </table>
+  <script src="/theme/admin/assets/layui/layui.js"></script>
+  <script>
+  function addView() {
+    layui.use(['layer', 'form'], function(){
+      var layer = layui.layer
+      ,form = layui.form;
+
+      var index = layer.open({
+          offset: '100px',
+          type: 2,
+          fix: false,
+          maxmin: true,
+          shadeClose: true,
+          shade:0.4,
+          title: '添加view',
+          content: '/admin/views/add'
+      });
+      layer.full(index);
+    });
+  }
+
+  function editView(view) {
+    layui.use(['layer', 'form'], function(){
+      var layer = layui.layer
+      ,form = layui.form;
+
+      var index = layer.open({
+          offset: '100px',
+          type: 2,
+          fix: false,
+          maxmin: true,
+          shadeClose: true,
+          shade:0.4,
+          title: '编辑view',
+          content: '/admin/views/view/'+view+'/edit'
+      });
+      layer.full(index);
+    });
+  }
+  </script>
+</body>
+</html>
