@@ -78,7 +78,7 @@ var App = new Vue({
         vm.$http.post('/admin/api/query-result', {
           'view_name': vm.view_name
         }).then(function (response) {
-            if (response.body.length == 0) {
+            if (response.body.length == false) {
               layer.alert('preview error！', {icon: 5});
             } else {
               vm.preview_result = response.body;
@@ -101,7 +101,7 @@ var App = new Vue({
         'overwrit_template': vm.overwrit_template,
         'type': type
       }).then(function (response) {
-          if (response.body.length == 0) {
+          if (response.body.length == false) {
             layer.alert('init error！', {icon: 5});
           } else {
             if(response.body == true) {

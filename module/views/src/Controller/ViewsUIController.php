@@ -134,23 +134,46 @@ class ViewsUIController {
    * @return string
    *   Return api_save_view string.
    */
-  public function api_save_view(ServerRequest $request, GenericBuilder $builder) {
+  public function api_save_view(ServerRequest $request, GenericBuilder $builder, StringConverter $stringConverter) {
     if($parms = $request->getParsedBody()){
+      if(!empty($parms['view_template'])){
+        if(!empty($parms['template_content']) && $parms['overwrit_template'] == 'true' && $parms['type'] == 'final'){
+          if (!is_dir(dirname($parms['view_template']))){
+            mkdir(dirname($parms['view_template']), 0755, true);
+          }
 
-      if(!empty($parms['view_template']) && !empty($parms['template_content']) && $parms['overwrit_template'] && $parms['type'] == 'final'){
-        if (!is_dir(dirname($parms['view_template']))){
-          mkdir(dirname($parms['view_template']), 0755, true);
+          file_put_contents($parms['view_template'], $parms['template_content']);
+        }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
+          $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_name'];
+          if (!is_dir(dirname($parms['view_template']))){
+            mkdir(dirname($parms['view_template']), 0755, true);
+          }
+
+          file_put_contents($parms['view_template'], $parms['template_content']);
+        }elseif (!empty($parms['template_content']) && $parms['type'] == 'final' && $parms['overwrit_template'] == 'false') {
+          $parms['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/'.basename($parms['view_template']);
+          if (!is_dir(dirname($parms['view_template']))){
+            mkdir(dirname($parms['view_template']), 0755, true);
+          }
+
+          file_put_contents($parms['view_template'], $parms['template_content']);
         }
+      }else {
+        if(!empty($parms['template_content']) && $parms['type'] == 'final'){
+          $view_machine_name = $stringConverter->createMachineName($parms['view_name']);
+          $parms['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/views-view-'.$view_machine_name.'.html';
+          if (!is_dir(dirname($parms['view_template']))){
+            mkdir(dirname($parms['view_template']), 0755, true);
+          }
 
-        file_put_contents($parms['view_template'], $parms['template_content']);
-      }elseif (!empty($parms['view_template']) && !empty($parms['template_content']) && $parms['overwrit_template'] && $parms['type'] == 'temp') {
-        $temp_template_path = 'sites/cache/views/views_view_cache_'.$parms['view_name'];
-        if (!is_dir(dirname($temp_template_path))){
-          mkdir(dirname($temp_template_path), 0755, true);
+          file_put_contents($parms['view_template'], $parms['template_content']);
+        }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
+          $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_name'];
+          if (!is_dir(dirname($parms['view_template']))){
+            mkdir(dirname($parms['view_template']), 0755, true);
+          }
+          file_put_contents($parms['view_template'], $parms['template_content']);
         }
-        file_put_contents($temp_template_path, $parms['template_content']);
-
-        $parms['view_template'] = $temp_template_path;
       }
 
       $query = $builder->select()
