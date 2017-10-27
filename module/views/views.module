@@ -55,115 +55,115 @@ function views_get_templates() {
 function _views_internal_tables() {
   if (module_exists('category')) {
     $tables['category'] = array(
-      "name" => "category",
-      "provider" => "internal",
-      "join" => array(
-        "left" => array(
-          "table" => "news",
-          "field" => "nid"
+      'name' => 'category',
+      'provider' => 'internal',
+      'join' => array(
+        'left' => array(
+          'table' => 'news',
+          'field' => 'nid'
         ),
-        "right" => array(
-          "field" => "nid"
+        'right' => array(
+          'field' => 'nid'
         )
       ),
-      "filters" => array(
-        "cid" => array(
-          'name' => "Category",
-          'list' => "views_handler_filter_cid",
-          'operator' => "views_handler_operator_andor",
+      'filters' => array(
+        'cid' => array(
+          'name' => 'Category',
+          'list' => 'views_handler_filter_cid',
+          'operator' => 'views_handler_operator_andor',
         )
       )
     );
   }
 
   $tables['users'] = array(
-    "name" => "users",
-    "provider" => "internal", // won't show up in external list.
-    "join" => array(
-      "left" => array(
-        "table" => "news",
-        "field" => "uid"
+    'name' => 'users',
+    'provider' => 'internal', // won't show up in external list.
+    'join' => array(
+      'left' => array(
+        'table' => 'news',
+        'field' => 'uid'
       ),
-      "right" => array(
-        "field" => "uid"
+      'right' => array(
+        'field' => 'uid'
       ),
     ),
-    "fields" => array(
-      "name" => array(
-        'name' => "User Name",
+    'fields' => array(
+      'name' => array(
+        'name' => 'User Name',
         'sortable' => true,
-        'uid' => "uid",
-        'addlfields' => array("uid")
+        'uid' => 'uid',
+        'addlfields' => array('uid')
       ),
-      "email" => array(
-        'name' => "User Email",
+      'email' => array(
+        'name' => 'User Email',
         'sortable' => true,
        ),
-      "status" => array(
-        'name' => "User Status",
+      'status' => array(
+        'name' => 'User Status',
         'sortable' => true,
       ),
-      "avatar" => array(
-        'name' => "User Avatar",
+      'avatar' => array(
+        'name' => 'User Avatar',
       ),
-      "created" => array(
-        'name' => "User created",
+      'created' => array(
+        'name' => 'User created',
       ),
-      "accessed" => array(
-        'name' => "User accessed",
+      'accessed' => array(
+        'name' => 'User accessed',
       )
     ),
-    "sorts" => array(
-      "name" => array('name' => "News Author Name")
+    'sorts' => array(
+      'name' => array('name' => 'News Author Name')
     ),
-    "filters" => array(
-      "uid" => array(
-        'name' => "News Author Name",
-        'operator' => "views_handler_operator_or",
-        'list' => "views_handler_filter_username"
+    'filters' => array(
+      'uid' => array(
+        'name' => 'News Author Name',
+        'operator' => 'views_handler_operator_or',
+        'list' => 'views_handler_filter_username'
       ),
-      "anon" => array(
+      'anon' => array(
         'field' => 'uid',
-        'name' => "News Author is Anonymous",
-        'operator' => "views_handler_operator_eqneq",
-        'list' => "views_handler_filter_useranon"
+        'name' => 'News Author is Anonymous',
+        'operator' => 'views_handler_operator_eqneq',
+        'list' => 'views_handler_filter_useranon'
       ),
-      "currentuid" => array(
-        'name' => "News Author is Current User",
-        'operator' => "views_handler_operator_eqneq",
-        'list' => "views_handler_filter_usercurrent",
-        'custom' => "views_handler_filter_usercurrent_custom",
+      'currentuid' => array(
+        'name' => 'News Author is Current User',
+        'operator' => 'views_handler_operator_eqneq',
+        'list' => 'views_handler_filter_usercurrent',
+        'custom' => 'views_handler_filter_usercurrent_custom',
         'cacheable' => 'no', // for future use.
       ),
     )
   );
 
   $tables['users_roles'] = array(
-    "name" => "users_role",
-    "provider" => "internal", // won't show up in external list.
-    "join" => array(
-      "left" => array(
-        "table" => "News",
-        "field" => "uid"
+    'name' => 'users_role',
+    'provider' => 'internal', // won't show up in external list.
+    'join' => array(
+      'left' => array(
+        'table' => 'News',
+        'field' => 'uid'
       ),
-      "right" => array(
-        "field" => "uid"
+      'right' => array(
+        'field' => 'uid'
       ),
     ),
-    "fields" => array(
-      "name" => array(
-        'name' => "Node Author Name",
+    'fields' => array(
+      'name' => array(
+        'name' => 'Node Author Name',
         'handler' => 'views_handler_field_username',
         'sortable' => true,
-        'uid' => "uid",
-        'addlfields' => array("uid")
+        'uid' => 'uid',
+        'addlfields' => array('uid')
       ),
     ),
-    "filters" => array(
-      "rid" => array(
-        'name' => "Author Role",
-        'operator' => "views_handler_operator_andor",
-        'list' => "views_handler_filter_role"
+    'filters' => array(
+      'rid' => array(
+        'name' => 'Author Role',
+        'operator' => 'views_handler_operator_andor',
+        'list' => 'views_handler_filter_role'
       ),
     )
   );

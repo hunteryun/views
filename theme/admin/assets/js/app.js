@@ -11,16 +11,18 @@ var App = new Vue({
     view_table: '',
     view_fields: [],
     view_template: '',
+    view_relation_table: '',
     has_description: false,
     tables: [],
     templates: [],
     template_content: '',
-    fields: [],
+    fields: {},
     preview_result: '',
     create_new_template: 'new',
     overwrit_template: true,
     show_editor: true,
-    temp_template: ''
+    temp_template: '',
+    relationships: []
   },
   mounted: function () {
     this.initTablesList();
@@ -64,10 +66,6 @@ var App = new Vue({
       }, function (response) {
           layer.alert('init error！', {icon: 5});
       });
-  	},
-    updateField: function() {
-      var vm = this;
-      vm.fields = vm.tables[vm.view_table].fields;
   	},
     previewResult: function(e) {
       e.preventDefault();
@@ -116,7 +114,21 @@ var App = new Vue({
   	},
     updateField: function() {
       var vm = this;
-      vm.fields = vm.tables[vm.view_table].fields;
+      for(var n in vm.tables[vm.view_table].fields){
+        vm.fields[vm.view_table+'.'+n] = vm.tables[vm.view_table].fields[n];
+      }
+
+      if(vm.tables[vm.view_table].relationship.length != 0){
+        for (var i=0; i<vm.tables[vm.view_table].relationship.length; i++){
+          vm.relationships.push(vm.tables[vm.view_table].relationship[i].left.table);
+        }
+      }
+  	},
+    addRelationshipFields: function() {
+      var vm = this;
+      for(var n in vm.tables[vm.view_relation_table].fields){
+        vm.fields[vm.view_relation_table+'.'+n] = vm.tables[vm.view_relation_table].fields[n];
+      }
   	},
     editThisTemplate: function(e) {
       e.preventDefault();
@@ -151,7 +163,7 @@ var App = new Vue({
         htmltext += '<table class="layui-table">\n <thead>\n  <tr>\n';
         if(vm.view_fields != []){
           for (var i=0; i<vm.view_fields.length; i++){
-            htmltext += '   <th>'+vm.tables[vm.view_table].fields[vm.view_fields[i]].name+'</th>\n';
+            htmltext += '   <th>'+vm.fields[vm.view_fields[i]].name+'</th>\n';
           }
         }
         htmltext += '  </tr>\n </thead>\n <tbody>\n  <tr>\n';

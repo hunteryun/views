@@ -22,16 +22,28 @@
       <div class="form-item">
         <div class="input-block">
           <input type="checkbox" name="has_description" title="描述" v-model="has_description">描述
-          <input type="text" name="view_description" v-if="has_description" v-model="view_description" class="input lay-hide">
+          <div class="input-block">
+            <input type="text" name="view_description" v-if="has_description" v-model="view_description" class="input lay-hide">
+          </div>
         </div>
       </div>
 
       <div class="form-item">
         <label class="form-label">查询</label>
         <div class="input-inline">
-          <select name="view_table" lay-filter="view_table" v-model="view_table" @change="updateField">
+          <select name="view_table" v-model="view_table" @change="updateField">
             <option value="">请选择表</option>
             <option v-for="(table, index) in tables" :value="index">@{{ index }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-item" v-if="relationships.length != 0">
+        <label class="form-label">关联</label>
+        <div class="input-inline">
+          <select name="view_pager" v-model="view_relation_table" @change="addRelationshipFields">
+            <option value="">请选择表</option>
+            <option value="mini_pager" v-for="rtable in relationships" :value="rtable">@{{ rtable }}</option>
           </select>
         </div>
       </div>
@@ -54,6 +66,80 @@
       <div><label class="form-label" v-if="view_fields != ''">可用字段</label></div>
 
       <button class="btn btn-primary btn-mini" v-for="field in view_fields">@{{ field }}</button>
+
+      <div class="form-item" pane="" v-if="view_table != ''">
+        <label class="form-label">过滤</label>
+        <div class="input-block" v-if="fields">
+          <table class="dataintable browsersupport">
+            <tbody>
+              <tr>
+                <th>字段</th>
+                <th>操作符</th>
+                <th>值</th>
+              </tr>
+              <tr>
+                <td class="bsIE"><input type="checkbox">field</td>
+                <td class="bsFirefox">
+                  <select class="form-select">
+                    <option value="=" selected="selected">Is equal to</option>
+                    <option value="!=">Is not equal to</option>
+                    <option value="contains">Contains</option>
+                    <option value="word">Contains any word</option>
+                    <option value="allwords">Contains all words</option>
+                    <option value="starts">Starts with</option>
+                    <option value="not_starts">Does not start with</option>
+                    <option value="ends">Ends with</option>
+                    <option value="not_ends">Does not end with</option>
+                    <option value="not">Does not contain</option>
+                    <option value="shorterthan">Length is shorter than</option>
+                    <option value="longerthan">Length is longer than</option>
+                    <option value="regular_expression">Regular expression</option>
+                  </select>
+                </td>
+                <td class="bsChrome"><input type="text" name="view_name" v-model="view_name" class="input"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="form-item" pane="" v-if="view_table != ''">
+        <label class="form-label">排序</label>
+        <div class="input-block" v-if="fields">
+          <table class="dataintable browsersupport">
+            <tbody>
+              <tr>
+                <th>字段</th>
+                <th>排序</th>
+                <th>选项</th>
+              </tr>
+              <tr>
+                <td class="bsIE"><input type="checkbox">field</td>
+                <td class="bsFirefox">
+                  <input type="radio" name="options[order]" value="ASC" checked="checked" class="form-radio">
+                  <label class="option">Sort ascending</label>
+                  <input type="radio" name="options[order]" value="DESC" class="form-radio">
+                  <label class="option">Sort descending</label>
+                </td>
+                <td class="bsChrome"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="form-item">
+        <label class="form-label">分页</label>
+        <div class="input-inline">
+          <select name="view_pager" lay-filter="view_pager">
+            <option value="">请选择分页</option>
+            <option value="mini_pager">迷你分页</option>
+            <option value="full_pager">完整分页</option>
+            <option value="display_all">显示所有</option>
+            <option value="display_number">显示部分</option>
+          </select>
+        </div>
+      </div>
 
       <div><label class="form-label">模板</label></div>
       <input type="radio" id="create_new_template" value="new" v-model="create_new_template">创建新模板

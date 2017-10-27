@@ -8,7 +8,6 @@ small, strong, sub, sup, var,
 input,textarea,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, figure, footer, header,hgroup, menu, nav, section, menu,
 time, mark, audio, video {
     margin:0;
@@ -17,7 +16,7 @@ time, mark, audio, video {
     outline:0;
     background:transparent;
 }
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,dl,dt,dd,ol,nav ul,nav li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,dl,dt,dd,ol,nav ul,nav li,fieldset,form,label,legend,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}
 article, aside, details, figcaption, figure,footer, header, hgroup, menu, nav, section {display: block;}
 ol,ul{list-style:none;margin:0;padding:0;}
 blockquote,q{quotes:none;}
@@ -91,7 +90,6 @@ table{border-collapse:collapse;border-spacing:0;}
 
 .view-config {
     margin:10px auto;
-    max-width: 400px;
     padding: 20px 12px 10px 20px;
     font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
@@ -214,74 +212,25 @@ select{
   background-image: url(../images/line-bg.png);
 }
 
-table a,
-table a:link,
-table a:visited {
-	border:none;
-	}
+.preview-result table {
+  width: 100%;
+  margin: 10px 0;
+  background-color: #fff;
+}
 
-img {
-	border:0;
-	margin-top:.5em;
-	}
-table {
-	width:90%;
-	border-top:1px solid #e5eff8;
-	border-right:1px solid #e5eff8;
-	margin:1em auto;
-		border-collapse:collapse;
-	}
-caption {
-	color: #9ba9b4;
-	font-size:.94em;
-		letter-spacing:.1em;
-		margin:1em 0 0 0;
-		padding:0;
-		caption-side:top;
-		text-align:center;
-	}
-tr.odd td	{
-	background:#f7fbff
-	}
-tr.odd .column1	{
-	background:#f4f9fe;
-	}
-.column1	{
-	background:#f9fcfe;
-	}
-td {
-	color:#678197;
-	border-bottom:1px solid #e5eff8;
-	border-left:1px solid #e5eff8;
-	padding:.3em 1em;
-	text-align:center;
-	}
-th {
-	font-weight:normal;
-	color: #678197;
-	text-align:left;
-	border-bottom: 1px solid #e5eff8;
-	border-left:1px solid #e5eff8;
-	padding:.3em 1em;
-	}
-thead th {
-	background:#f4f9fe;
-	text-align:center;
-	font:bold 1.2em/2em "Century Gothic","Trebuchet MS",Arial,Helvetica,sans-serif;
-	color:#66a3d3
-	}
-tfoot th {
-	text-align:center;
-	background:#f4f9fe;
-	}
-tfoot th strong {
-	font:bold 1.2em "Century Gothic","Trebuchet MS",Arial,Helvetica,sans-serif;
-	margin:.5em .5em .5em 0;
-	color:#66a3d3;
-		}
-tfoot th em {
-	color:#f03b58;
-	font-weight: bold;
-	font-size: 1.1em;
-	font-style: normal;
-	}
+.preview-result table thead tr {
+  background-color: #f2f2f2;
+}
+
+.preview-result table td, .preview-result table th {
+  border: 1px solid #e2e2e2;
+}
+
+.preview-result table td,
+.preview-result table th {
+  position: relative;
+  padding: 9px 15px;
+  min-height: 20px;
+  line-height: 20px;
+  font-size: 14px;
+}
