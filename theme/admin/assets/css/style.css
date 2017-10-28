@@ -134,7 +134,6 @@ select{
 .view-config input[type=time]:focus,
 .view-config input[type=url]:focus,
 .view-config input[type=email]:focus,
-.view-config textarea:focus,
 .view-config select:focus{
     -moz-box-shadow: 0 0 8px #88D5E9;
     -webkit-box-shadow: 0 0 8px #88D5E9;

@@ -176,10 +176,28 @@ class ViewsUIController {
         }
       }
 
-      $query = $builder->select()
-      ->setTable($parms['view_table'])
-      ->setColumns($parms['view_fields'])
-      ->end();
+      $tables = _views_get_tables();
+      $lfields = $rfields = array();
+
+      foreach ($parms['view_fields'] as $key => $field) {
+        if(substr($field,0,strrpos($field,'.')) == $parms['view_table']){
+          $lfields[] = str_replace($parms['view_table'].'.','',$field);
+        }else {
+          $rfields[] = str_replace($parms['view_relation_table'].'.','',$field);
+        }
+      }
+
+      $query = $builder->select()->setTable($parms['view_table']);
+      $query->setColumns($lfields);
+
+      if($rfields){
+        $query->innerJoin(
+          $parms['view_relation_table'], //join table
+          'uid', //origin table field used to join
+          'uid', //join column
+           $rfields
+        );
+      }
 
       $parms['view_query'] = $builder->write($query);
 

@@ -93,6 +93,7 @@ var App = new Vue({
         'view_name': vm.view_name,
         'view_description': vm.view_description,
         'view_table': vm.view_table,
+        'view_relation_table': vm.view_relation_table,
         'view_fields': vm.view_fields,
         'view_template': vm.view_template,
         'template_content': vm.template_content,
@@ -151,11 +152,13 @@ var App = new Vue({
       {
       case 'htmllist':
         htmltext += '<div class="item-list">\n <ul>\n';
+        htmltext += '  @foreach($viewdata as $item)\n  <li>\n';
         if(vm.view_fields != []){
           for (var i=0; i<vm.view_fields.length; i++){
-            htmltext += '  <li>{{ $'+vm.view_fields[i]+' }}</li>\n';
+            htmltext += '   <p>{{ $item->'+vm.view_fields[i].split(".")[1]+' }}</p>\n';
           }
         }
+        htmltext += '  </li>\n  @endforeach\n';
         htmltext += ' </ul>\n</div>\n';
         vm.template_content = htmltext;
         break;
@@ -166,22 +169,25 @@ var App = new Vue({
             htmltext += '   <th>'+vm.fields[vm.view_fields[i]].name+'</th>\n';
           }
         }
-        htmltext += '  </tr>\n </thead>\n <tbody>\n  <tr>\n';
+        htmltext += '  </tr>\n </thead>\n <tbody>\n';
+        htmltext += '  @foreach($viewdata as $item)\n  <tr>\n';
         if(vm.view_fields != []){
           for (var i=0; i<vm.view_fields.length; i++){
-            htmltext += '   <td>{{ $'+vm.view_fields[i]+' }}</td>\n';
+            htmltext += '   <td>{{ $item->'+vm.view_fields[i].split(".")[1]+' }}</td>\n';
           }
         }
-        htmltext += '  </tr>\n </tbody>\n</table>';
+        htmltext += '  </tr>\n  @endforeach\n';
+        htmltext += ' </tbody>\n</table>';
         vm.template_content = htmltext;
         break;
       default:
         if(vm.view_fields != []){
+          htmltext += '@foreach($viewdata as $item)\n';
           for (var i=0; i<vm.view_fields.length; i++){
-            htmltext += '{{ $'+vm.view_fields[i]+' }}\n';
+            htmltext += '{{ $item->'+vm.view_fields[i].split(".")[1]+' }}\n';
           }
+          htmltext += '@endforeach\n\n';
         }
-
         vm.template_content = htmltext;
       }
   	},
