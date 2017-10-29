@@ -46,6 +46,14 @@ views.viewsui_api_get_tables:
   requirements:
     _permission: 'access admin page'
 
+views.viewsui_api_get_filter_ops:
+  path: '/admin/api/filter-ops'
+  defaults:
+    _controller: '\Hunter\views\Controller\ViewsUIController::api_get_filter_ops'
+    _title: 'Api get filter ops'
+  requirements:
+    _permission: 'access admin page'
+
 views.viewsui_api_get_templates:
   path: '/admin/api/templates'
   defaults:

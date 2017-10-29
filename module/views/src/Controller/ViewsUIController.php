@@ -94,6 +94,143 @@ class ViewsUIController {
   }
 
   /**
+   * api_get_filter_ops.
+   *
+   * @return string
+   *   Return api_get_filter_ops string.
+   */
+  public function api_get_filter_ops() {
+    $operators['string'] = array(
+      '=' => array(
+        'title' => 'Is equal to',
+        'short' => '=',
+        'method' => 'op_equal',
+        'values' => 1,
+      ),
+      '!=' => array(
+        'title' => 'Is not equal to',
+        'short' => '!=',
+        'method' => 'op_equal',
+        'values' => 1,
+      ),
+      'contains' => array(
+        'title' => 'Contains',
+        'short' => 'contains',
+        'method' => 'op_contains',
+        'values' => 1,
+      ),
+      'word' => array(
+        'title' => 'Contains any word',
+        'short' => 'has word',
+        'method' => 'op_word',
+        'values' => 1,
+      ),
+      'allwords' => array(
+        'title' => 'Contains all words',
+        'short' => 'has all',
+        'method' => 'op_word',
+        'values' => 1,
+      ),
+      'starts' => array(
+        'title' => 'Starts with',
+        'short' => 'begins',
+        'method' => 'op_starts',
+        'values' => 1,
+      ),
+      'not_starts' => array(
+        'title' => 'Does not start with',
+        'short' => 'not_begins',
+        'method' => 'op_not_starts',
+        'values' => 1,
+      ),
+      'ends' => array(
+        'title' => 'Ends with',
+        'short' => 'ends',
+        'method' => 'op_ends',
+        'values' => 1,
+      ),
+      'not_ends' => array(
+        'title' => 'Does not end with',
+        'short' => 'not_ends',
+        'method' => 'op_not_ends',
+        'values' => 1,
+      ),
+      'not' => array(
+        'title' => 'Does not contain',
+        'short' => '!has',
+        'method' => 'op_not',
+        'values' => 1,
+      ),
+    );
+    $operators['number'] = array(
+      '<' => array(
+        'title' => 'Is less than',
+        'method' => 'op_simple',
+        'short' => '<',
+        'values' => 1,
+      ),
+      '<=' => array(
+        'title' => 'Is less than or equal to',
+        'method' => 'op_simple',
+        'short' => '<=',
+        'values' => 1,
+      ),
+      '=' => array(
+        'title' => 'Is equal to',
+        'method' => 'op_simple',
+        'short' => '=',
+        'values' => 1,
+      ),
+      '!=' => array(
+        'title' => 'Is not equal to',
+        'method' => 'op_simple',
+        'short' => '!=',
+        'values' => 1,
+      ),
+      '>=' => array(
+        'title' => 'Is greater than or equal to',
+        'method' => 'op_simple',
+        'short' => '>=',
+        'values' => 1,
+      ),
+      '>' => array(
+        'title' => 'Is greater than',
+        'method' => 'op_simple',
+        'short' => '>',
+        'values' => 1,
+      ),
+      'between' => array(
+        'title' => 'Is between',
+        'method' => 'op_between',
+        'short' => 'between',
+        'values' => 2,
+      ),
+      'not between' => array(
+        'title' => 'Is not between',
+        'method' => 'op_between',
+        'short' => 'not between',
+        'values' => 2,
+      ),
+    );
+    $operators['yes-no'] = array(
+      '=' => array(
+        'title' => 'Is equal to',
+        'method' => 'op_simple',
+        'short' => '=',
+        'values' => 1,
+      ),
+      '!=' => array(
+        'title' => 'Is not equal to',
+        'method' => 'op_simple',
+        'short' => '!=',
+        'values' => 1,
+      ),
+    );
+
+    return new JsonResponse($operators);
+  }
+
+  /**
    * api_ge_template_content.
    *
    * @return string

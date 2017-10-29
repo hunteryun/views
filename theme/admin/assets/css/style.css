@@ -71,6 +71,14 @@ table{border-collapse:collapse;border-spacing:0;}
   width: 100px;
 }
 
+.header {
+  color: #ffffff;
+  font-family: Tahoma;
+  font-size: 16px;
+  background-color: #363636;
+  padding: 5px 0px 5px 20px;
+}
+
 .view-config, .side-right {
   display: inline-block;
   width: 49%;
@@ -80,8 +88,11 @@ table{border-collapse:collapse;border-spacing:0;}
   padding: 20px;
 }
 
-.preview-result {
+.side-right {
   border-left: 1px solid #ccc;
+}
+
+.preview-result {
   resize: none;
   outline: none;
   font-size: 14px;
@@ -89,21 +100,35 @@ table{border-collapse:collapse;border-spacing:0;}
 }
 
 .view-config {
-    margin:10px auto;
-    padding: 20px 12px 10px 20px;
-    font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  margin:0 auto;
+  padding: 10px 12px 10px 20px;
+  font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
-.view-config li {
-    padding: 0;
-    display: block;
-    list-style: none;
-    margin: 10px 0 0 0;
+.view-config .form-item {
+  padding: 0;
+  display: block;
+  list-style: none;
+  margin: 10px 0 0 0;
+}
+.view-config #view_table, .view-config #view_relation {
+  display: inline-block;
+  vertical-align: middle;
 }
 .view-config label{
-    margin:0 0 3px 0;
-    padding:0px;
-    display:block;
-    font-weight: bold;
+  margin:0 0 3px 0;
+  padding:0px;
+  display:block;
+  font-weight: bold;
+}
+.view-config .form-item button {
+  margin-right: 3px;
+}
+.view-config .input-block {
+  display: inline-block;
+}
+.view-config .input-block li {
+  display: inline-block;
+  width: 30%;
 }
 .view-config input[type=text],
 .view-config input[type=date],
@@ -135,10 +160,10 @@ select{
 .view-config input[type=url]:focus,
 .view-config input[type=email]:focus,
 .view-config select:focus{
-    -moz-box-shadow: 0 0 8px #88D5E9;
-    -webkit-box-shadow: 0 0 8px #88D5E9;
-    box-shadow: 0 0 8px #88D5E9;
-    border: 1px solid #88D5E9;
+    -moz-box-shadow: 0 0 8px #78A15A;
+    -webkit-box-shadow: 0 0 8px #78A15A;
+    box-shadow: 0 0 8px #78A15A;
+    border: 1px solid #78A15A;
 }
 .view-config .field-divided{
     width: 49%;
@@ -232,4 +257,38 @@ select{
   min-height: 20px;
   line-height: 20px;
   font-size: 14px;
+}
+
+.dataintable thead tr {
+  background-color: #f2f2f2;
+}
+.dataintable th,
+.dataintable td {
+  position: relative;
+  padding: 9px 15px;
+  min-height: 10px;
+  line-height: 10px;
+  font-size: 14px;
+  border: 1px solid #e2e2e2;
+}
+.view_filters_list {
+  border: 1px solid #f3f3f3;
+  line-height: 20px;
+  margin: 10px 0;
+}
+.view_filters_list li {
+  padding: 5px 6px 5px;
+  color: #666;
+  font-size: 12px;
+}
+.view_filters_list li.even {
+  background-color: #f3f5ee;
+}
+.view_filters_list li span {
+  display: inline-block;
+  cursor: pointer;
+  color: #0074bd;
+}
+.view_filters_list li .destroy {
+  float: right;
 }

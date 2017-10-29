@@ -66,12 +66,18 @@ function _views_internal_tables() {
           'field' => 'nid'
         )
       ),
-      'filters' => array(
+      'fields' => array(
         'cid' => array(
-          'name' => 'Category',
-          'list' => 'views_handler_filter_cid',
-          'operator' => 'views_handler_operator_andor',
-        )
+          'name' => 'Cid',
+          'help' => 'The category ID.',
+          'sortable' => true,
+          'filter_type' => 'number',
+        ),
+        'name' => array(
+          'name' => 'Category Name',
+          'sortable' => true,
+          'filter_type' => 'string',
+        ),
       )
     );
   }
@@ -93,49 +99,31 @@ function _views_internal_tables() {
         'name' => 'User Name',
         'sortable' => true,
         'uid' => 'uid',
-        'addlfields' => array('uid')
+        'addlfields' => array('uid'),
+        'filter_type' => 'string',
       ),
       'email' => array(
         'name' => 'User Email',
         'sortable' => true,
+        'filter_type' => 'string',
        ),
       'status' => array(
         'name' => 'User Status',
         'sortable' => true,
+        'filter_type' => 'yes-no',
       ),
       'avatar' => array(
         'name' => 'User Avatar',
       ),
       'created' => array(
         'name' => 'User created',
+        'filter_type' => 'number',
       ),
       'accessed' => array(
         'name' => 'User accessed',
+        'filter_type' => 'number',
       )
     ),
-    'sorts' => array(
-      'name' => array('name' => 'News Author Name')
-    ),
-    'filters' => array(
-      'uid' => array(
-        'name' => 'News Author Name',
-        'operator' => 'views_handler_operator_or',
-        'list' => 'views_handler_filter_username'
-      ),
-      'anon' => array(
-        'field' => 'uid',
-        'name' => 'News Author is Anonymous',
-        'operator' => 'views_handler_operator_eqneq',
-        'list' => 'views_handler_filter_useranon'
-      ),
-      'currentuid' => array(
-        'name' => 'News Author is Current User',
-        'operator' => 'views_handler_operator_eqneq',
-        'list' => 'views_handler_filter_usercurrent',
-        'custom' => 'views_handler_filter_usercurrent_custom',
-        'cacheable' => 'no', // for future use.
-      ),
-    )
   );
 
   $tables['users_roles'] = array(
@@ -153,17 +141,9 @@ function _views_internal_tables() {
     'fields' => array(
       'name' => array(
         'name' => 'Node Author Name',
-        'handler' => 'views_handler_field_username',
         'sortable' => true,
         'uid' => 'uid',
-        'addlfields' => array('uid')
-      ),
-    ),
-    'filters' => array(
-      'rid' => array(
-        'name' => 'Author Role',
-        'operator' => 'views_handler_operator_andor',
-        'list' => 'views_handler_filter_role'
+        'filter_type' => 'string',
       ),
     )
   );

@@ -10,6 +10,7 @@ var App = new Vue({
     view_description: '',
     view_table: '',
     view_fields: [],
+    view_filters: [],
     view_template: '',
     view_relation_table: '',
     has_description: false,
@@ -22,10 +23,20 @@ var App = new Vue({
     overwrit_template: true,
     show_editor: true,
     temp_template: '',
-    relationships: []
+    relationships: [],
+    filters_list: [],
+    filter_ops: [],
+    new_filter_field: '',
+    new_filter_op: '',
+    new_filter_value: '',
+    new_sort_field: '',
+    new_sort_op: '',
+    editedFilter: null,
+    edit_filter_mode: false
   },
   mounted: function () {
     this.initTablesList();
+    this.initFilterOpList();
     this.initTemplatesList();
   },
   methods: {
@@ -40,31 +51,94 @@ var App = new Vue({
       }, function (response) {
           layer.alert('init error！', {icon: 5});
       });
+    },
+    initFilterOpList: function() {
+      var vm = this;
+      vm.$http.get('/admin/api/filter-ops').then(function (response) {
+        if (response.body.length == 0) {
+          layer.alert('init error！', {icon: 5});
+        } else {
+          vm.filters_list = response.body;
+        }
+      }, function (response) {
+        layer.alert('init error！', {icon: 5});
+      });
   	},
     initTemplatesList: function() {
       var vm = this;
       vm.$http.post('/admin/api/templates').then(function (response) {
-          if (response.body.length == 0) {
-            layer.alert('init error！', {icon: 5});
-          } else {
-            vm.templates = response.body;
-          }
-      }, function (response) {
+        if (response.body.length == 0) {
           layer.alert('init error！', {icon: 5});
+        } else {
+          vm.templates = response.body;
+        }
+      }, function (response) {
+        layer.alert('init error！', {icon: 5});
       });
   	},
+    addNewFilter: function(e) {
+      e.preventDefault();
+      var vm = this;
+      var value = vm.new_filter_value && vm.new_filter_value.trim();
+      if (vm.new_filter_field == '' || vm.new_filter_op == '' || !value) {
+        layer.alert('Please select the filter field！', {icon: 5});
+        return;
+      }
+      vm.view_filters.push({
+        field: vm.new_filter_field,
+        op: vm.new_filter_op,
+        value: vm.new_filter_value.trim()
+      })
+  	},
+    editFilter: function (filter, e) {
+      e.preventDefault();
+      var vm = this;
+      vm.new_filter_field = filter.field;
+      vm.new_filter_op = filter.op;
+      vm.new_filter_value = filter.value;
+      vm.editedFilter = filter;
+      vm.edit_filter_mode = true;
+    },
+    doneEditFilter: function (e) {
+      e.preventDefault();
+      var vm = this;
+      var value = vm.new_filter_value && vm.new_filter_value.trim();
+      if (!value) {
+        layer.alert('Please set the filter value', {icon: 5});
+        return;
+      }
+      vm.view_filters.splice(vm.view_filters.indexOf(vm.editedFilter), 1, {
+        field: vm.new_filter_field,
+        op: vm.new_filter_op,
+        value: vm.new_filter_value.trim()
+      });
+      vm.edit_filter_mode = false;
+    },
+    cancelEditFilter: function (e) {
+      e.preventDefault();
+      var vm = this;
+      vm.new_filter_field = '';
+      vm.new_filter_op = '';
+      vm.new_filter_value = '';
+      vm.edit_filter_mode = false;
+    },
+    removeFilter: function (filter, e) {
+      e.preventDefault();
+      var vm = this;
+      vm.view_filters.splice(vm.view_filters.indexOf(filter), 1);
+    },
     cleanLoadTemplates: function(e) {
       e.preventDefault();
       var vm = this;
       vm.$http.post('/admin/api/templates', {'rescan': true}).then(function (response) {
-          if (response.body.length == 0) {
-            layer.alert('init error！', {icon: 5});
-          } else {
-            vm.templates = response.body;
-            layer.msg('Clean Success!', {time: 1000, icon: 6});
-          }
-      }, function (response) {
+        if (response.body.length == 0) {
           layer.alert('init error！', {icon: 5});
+        } else {
+          vm.templates = response.body;
+          layer.msg('Clean Success!', {time: 1000, icon: 6});
+        }
+      }, function (response) {
+        layer.alert('init error！', {icon: 5});
       });
   	},
     previewResult: function(e) {
@@ -76,13 +150,13 @@ var App = new Vue({
         vm.$http.post('/admin/api/query-result', {
           'view_name': vm.view_name
         }).then(function (response) {
-            if (response.body.length == false) {
-              layer.alert('preview error！', {icon: 5});
-            } else {
-              vm.preview_result = response.body;
-            }
-        }, function (response) {
+          if (response.body.length == false) {
             layer.alert('preview error！', {icon: 5});
+          } else {
+            vm.preview_result = response.body;
+          }
+        }, function (response) {
+          layer.alert('preview error！', {icon: 5});
         });
       })
   	},
@@ -125,6 +199,13 @@ var App = new Vue({
         }
       }
   	},
+    updateFilterOp: function() {
+      var vm = this;
+      var select_table = vm.new_filter_field.split(".")[0];
+      var select_filed = vm.new_filter_field.split(".")[1];
+      var select_field_filter_type = vm.tables[select_table].fields[select_filed].filter_type;
+      vm.filter_ops = vm.filters_list[select_field_filter_type];
+    },
     addRelationshipFields: function() {
       var vm = this;
       for(var n in vm.tables[vm.view_relation_table].fields){
