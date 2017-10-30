@@ -276,6 +276,10 @@ select{
   font-size: 14px;
   border: 1px solid #e2e2e2;
 }
+.dataintable td input {
+  display: inline-block;
+  vertical-align: middle;
+}
 .view_filters_list {
   border: 1px solid #f3f3f3;
   line-height: 20px;

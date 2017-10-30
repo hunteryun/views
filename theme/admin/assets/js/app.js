@@ -31,6 +31,7 @@ var App = new Vue({
     new_filter_value: '',
     new_sort_field: '',
     new_sort_op: '',
+    select_field_filter_type: '',
     editedFilter: null,
     edit_filter_mode: false
   },
@@ -208,8 +209,8 @@ var App = new Vue({
       var vm = this;
       var select_table = vm.new_filter_field.split(".")[0];
       var select_filed = vm.new_filter_field.split(".")[1];
-      var select_field_filter_type = vm.tables[select_table].fields[select_filed].filter_type;
-      vm.filter_ops = vm.filters_list[select_field_filter_type];
+      vm.select_field_filter_type = vm.tables[select_table].fields[select_filed].filter_type;
+      vm.filter_ops = vm.filters_list[vm.select_field_filter_type];
     },
     addRelationshipFields: function() {
       var vm = this;

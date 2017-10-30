@@ -87,7 +87,13 @@
                     <option v-for="(op, key) in filter_ops" :value="key">@{{ op.title }}</option>
                   </select>
                 </td>
-                <td class="bsChrome"><input type="text" name="new_filter_value" v-model="new_filter_value" class="input"></td>
+                <td class="bsChrome">
+                  <input type="text" name="new_filter_value" v-model="new_filter_value" class="input" v-if="select_field_filter_type != 'yes-no'">
+                  <div v-else>
+                    <input type="radio" name="new_filter_value" value="1" v-model="new_filter_value" checked="checked" class="form-radio">Yes
+                    <input type="radio" name="new_filter_value" value="0" v-model="new_filter_value" class="form-radio">No
+                  </div>
+                </td>
                 <td class="bsChrome">
                   <button class="btn btn-primary btn-mini" @click="addNewFilter" v-if="!edit_filter_mode">添加</button>
                   <button class="btn btn-primary btn-mini" v-if="!edit_filter_mode">暴露</button>
