@@ -171,7 +171,7 @@ function views_get_view($name, $preview = false) {
   }
 
   if(isset($view['view_query']) && isset($view['view_template'])){
-    $result = db_query($view['view_query'])->fetchAll();
+    $result = db_query($view['view_query'], $view['view_query_values'])->fetchAll();
 
     if($result) {
       $output = theme()->render($view['view_template'], array('viewdata' => $result));

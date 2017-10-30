@@ -123,8 +123,11 @@ table{border-collapse:collapse;border-spacing:0;}
 .view-config .form-item button {
   margin-right: 3px;
 }
-.view-config .input-block {
+.view-config .input-inline-block {
   display: inline-block;
+}
+.view-config .input-block ul {
+  width: 100%;
 }
 .view-config .input-block li {
   display: inline-block;
@@ -258,7 +261,9 @@ select{
   line-height: 20px;
   font-size: 14px;
 }
-
+.dataintable {
+  width: 100%;
+}
 .dataintable thead tr {
   background-color: #f2f2f2;
 }

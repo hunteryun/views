@@ -18,10 +18,10 @@
     <form class="view-config" action="#">
       <div class="form-item">
         <label class="form-label">名称</label>
-        <div class="input-block">
+        <div class="input-inline-block">
           <input type="text" name="view_name" v-model="view_name">
         </div>
-        <div class="input-block">
+        <div class="input-inline-block">
           <input type="checkbox" name="has_description" title="描述" v-model="has_description">描述
           <input type="text" name="view_description" v-if="has_description" v-model="view_description">
         </div>
@@ -60,18 +60,18 @@
 
       <div class="form-item" pane="" v-if="view_table != ''">
         <label class="form-label">过滤</label>
-        <div class="view_filters_list" v-if="view_filters">
+        <div class="view_filters_list" v-if="view_filters.length != 0">
           <ul>
-            <li v-for="(filter, key) in view_filters" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }"><span @click="editFilter(filter)">@{{ filter.field }} (@{{ filter.op +' '+ filter.value }})</span> <button class="destroy" @click="removeFilter(filter, $event)">Remove</button><button class="destroy" @click="editFilter(filter, $event)">Edit</button></li>
+            <li v-for="(filter, key) in view_filters" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }"><span @click="editFilter(filter)">@{{ filter.field }} (@{{ filter.lable +' '+ filter.value }})</span> <button class="destroy" @click="removeFilter(filter, $event)">Remove</button><button class="destroy" @click="editFilter(filter, $event)">Edit</button></li>
           </ul>
         </div>
         <div class="input-block" v-if="fields">
           <table class="dataintable">
             <thead>
               <tr>
-                <th>字段</th>
-                <th>操作符</th>
-                <th>值</th>
+                <th width="25%">字段</th>
+                <th width="35%">操作符</th>
+                <th width="25%">值</th>
                 <th>操作</th>
               </tr>
              </thead>
@@ -106,9 +106,9 @@
           <table class="dataintable">
             <thead>
               <tr>
-                <th>字段</th>
-                <th>排序</th>
-                <th>选项</th>
+                <th width="25%">字段</th>
+                <th width="35%">排序</th>
+                <th width="25%">选项</th>
                 <th>操作</th>
               </tr>
              </thead>
@@ -120,11 +120,11 @@
                   </select>
                 </td>
                 <td class="bsFirefox">
-                  <select class="form-select" v-model="new_sort_op">
+                  <select class="form-select">
                     <option v-for="(op, key) in filter_ops" :value="key">@{{ op.title }}</option>
                   </select>
                 </td>
-                <td class="bsChrome"><input type="text" name="new_sort_value" v-model="new_sort_value" class="input"></td>
+                <td class="bsChrome"><input type="text" name="new_sort_value" class="input"></td>
                 <td class="bsChrome"><button class="btn btn-primary btn-mini" @click="addNewFilter">添加</button></td>
               </tr>
             </tbody>

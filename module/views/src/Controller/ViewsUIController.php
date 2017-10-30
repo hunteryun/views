@@ -101,129 +101,73 @@ class ViewsUIController {
    */
   public function api_get_filter_ops() {
     $operators['string'] = array(
-      '=' => array(
+      'equals' => array(
         'title' => 'Is equal to',
-        'short' => '=',
-        'method' => 'op_equal',
-        'values' => 1,
+        'lable' => '=',
       ),
-      '!=' => array(
+      'notEquals' => array(
         'title' => 'Is not equal to',
-        'short' => '!=',
-        'method' => 'op_equal',
-        'values' => 1,
+        'lable' => '!=',
       ),
-      'contains' => array(
-        'title' => 'Contains',
-        'short' => 'contains',
-        'method' => 'op_contains',
-        'values' => 1,
+      'like' => array(
+        'title' => 'Like',
+        'lable' => 'like',
       ),
-      'word' => array(
-        'title' => 'Contains any word',
-        'short' => 'has word',
-        'method' => 'op_word',
-        'values' => 1,
+      'notLike' => array(
+        'title' => 'Not Like',
+        'lable' => 'notlike',
       ),
-      'allwords' => array(
-        'title' => 'Contains all words',
-        'short' => 'has all',
-        'method' => 'op_word',
-        'values' => 1,
+      'isNull' => array(
+        'title' => 'Is empty (NULL)',
+        'lable' => 'empty',
       ),
-      'starts' => array(
-        'title' => 'Starts with',
-        'short' => 'begins',
-        'method' => 'op_starts',
-        'values' => 1,
-      ),
-      'not_starts' => array(
-        'title' => 'Does not start with',
-        'short' => 'not_begins',
-        'method' => 'op_not_starts',
-        'values' => 1,
-      ),
-      'ends' => array(
-        'title' => 'Ends with',
-        'short' => 'ends',
-        'method' => 'op_ends',
-        'values' => 1,
-      ),
-      'not_ends' => array(
-        'title' => 'Does not end with',
-        'short' => 'not_ends',
-        'method' => 'op_not_ends',
-        'values' => 1,
-      ),
-      'not' => array(
-        'title' => 'Does not contain',
-        'short' => '!has',
-        'method' => 'op_not',
-        'values' => 1,
+      'isNotNull' => array(
+        'title' => 'Is not empty (NOT NULL)',
+        'lable' => 'notempty',
       ),
     );
     $operators['number'] = array(
-      '<' => array(
+      'lessThan' => array(
         'title' => 'Is less than',
-        'method' => 'op_simple',
-        'short' => '<',
-        'values' => 1,
+        'lable' => '<',
       ),
-      '<=' => array(
+      'lessThanOrEqual' => array(
         'title' => 'Is less than or equal to',
-        'method' => 'op_simple',
-        'short' => '<=',
-        'values' => 1,
+        'lable' => '<=',
       ),
-      '=' => array(
+      'equals' => array(
         'title' => 'Is equal to',
-        'method' => 'op_simple',
-        'short' => '=',
-        'values' => 1,
+        'lable' => '=',
       ),
-      '!=' => array(
+      'notEquals' => array(
         'title' => 'Is not equal to',
-        'method' => 'op_simple',
-        'short' => '!=',
-        'values' => 1,
+        'lable' => '!=',
       ),
-      '>=' => array(
+      'greaterThanOrEqual' => array(
         'title' => 'Is greater than or equal to',
-        'method' => 'op_simple',
-        'short' => '>=',
-        'values' => 1,
+        'lable' => '>=',
       ),
-      '>' => array(
+      'greaterThan' => array(
         'title' => 'Is greater than',
-        'method' => 'op_simple',
-        'short' => '>',
-        'values' => 1,
+        'lable' => '>',
       ),
       'between' => array(
         'title' => 'Is between',
-        'method' => 'op_between',
-        'short' => 'between',
-        'values' => 2,
+        'lable' => 'between',
       ),
-      'not between' => array(
+      'notBetween' => array(
         'title' => 'Is not between',
-        'method' => 'op_between',
-        'short' => 'not between',
-        'values' => 2,
+        'lable' => 'not between',
       ),
     );
     $operators['yes-no'] = array(
-      '=' => array(
+      'equals' => array(
         'title' => 'Is equal to',
-        'method' => 'op_simple',
-        'short' => '=',
-        'values' => 1,
+        'lable' => '=',
       ),
-      '!=' => array(
+      'notEquals' => array(
         'title' => 'Is not equal to',
-        'method' => 'op_simple',
-        'short' => '!=',
-        'values' => 1,
+        'lable' => '!=',
       ),
     );
 
@@ -260,9 +204,9 @@ class ViewsUIController {
         return new JsonResponse($result);
       }
 
-      return new JsonResponse(false);
+      return new JsonResponse('Empty Content !');
     }
-    return new JsonResponse(false);
+    return new JsonResponse('Select Error !');
   }
 
   /**
@@ -336,7 +280,16 @@ class ViewsUIController {
         );
       }
 
+      if(!empty($parms['view_filters'])){
+        foreach ($parms['view_filters'] as $filter) {
+          $op = $filter['op'];
+          $query->where()
+          ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
+        }
+      }
+
       $parms['view_query'] = $builder->write($query);
+      $parms['view_query_values'] = $builder->getValues();
 
       if(is_string($parms['view_query'])){
         $this->views_view_save($parms);

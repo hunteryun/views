@@ -87,7 +87,8 @@ var App = new Vue({
       vm.view_filters.push({
         field: vm.new_filter_field,
         op: vm.new_filter_op,
-        value: vm.new_filter_value.trim()
+        value: vm.new_filter_value.trim(),
+        lable: vm.filter_ops[vm.new_filter_op].lable,
       })
   	},
     editFilter: function (filter, e) {
@@ -110,7 +111,8 @@ var App = new Vue({
       vm.view_filters.splice(vm.view_filters.indexOf(vm.editedFilter), 1, {
         field: vm.new_filter_field,
         op: vm.new_filter_op,
-        value: vm.new_filter_value.trim()
+        value: vm.new_filter_value.trim(),
+        lable: vm.filter_ops[vm.new_filter_op].lable
       });
       vm.edit_filter_mode = false;
     },
@@ -145,21 +147,21 @@ var App = new Vue({
       e.preventDefault();
       var vm = this;
       vm.saveView('temp', e);
-
-      vm.$nextTick(function () {
-        vm.$http.post('/admin/api/query-result', {
-          'view_name': vm.view_name
-        }).then(function (response) {
-          if (response.body.length == false) {
-            layer.alert('preview error！', {icon: 5});
-          } else {
-            vm.preview_result = response.body;
-          }
-        }, function (response) {
+    },
+    getPreviewResult: function() {
+      var vm = this;
+      vm.$http.post('/admin/api/query-result', {
+        'view_name': vm.view_name
+      }).then(function (response) {
+        if (response.body.length == false) {
           layer.alert('preview error！', {icon: 5});
-        });
-      })
-  	},
+        } else {
+          vm.preview_result = response.body;
+        }
+      }, function (response) {
+        layer.alert('preview error！', {icon: 5});
+      });
+    },
     saveView: function(type, e) {
       e.preventDefault();
       var vm = this;
@@ -169,6 +171,7 @@ var App = new Vue({
         'view_table': vm.view_table,
         'view_relation_table': vm.view_relation_table,
         'view_fields': vm.view_fields,
+        'view_filters': vm.view_filters,
         'view_template': vm.view_template,
         'template_content': vm.template_content,
         'overwrit_template': vm.overwrit_template,
@@ -181,6 +184,7 @@ var App = new Vue({
               layer.msg('Save Success!', {time: 1000, icon: 6});
             }else {
               vm.temp_template = response.body;
+              vm.getPreviewResult();
             }
           }
       }, function (response) {
@@ -189,11 +193,12 @@ var App = new Vue({
   	},
     updateField: function() {
       var vm = this;
+      vm.fields = {};
       for(var n in vm.tables[vm.view_table].fields){
         vm.fields[vm.view_table+'.'+n] = vm.tables[vm.view_table].fields[n];
       }
 
-      if(vm.tables[vm.view_table].relationship.length != 0){
+      if(vm.tables[vm.view_table].relationship){
         for (var i=0; i<vm.tables[vm.view_table].relationship.length; i++){
           vm.relationships.push(vm.tables[vm.view_table].relationship[i].left.table);
         }
