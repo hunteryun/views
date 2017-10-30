@@ -115,7 +115,7 @@ class ViewsUIController {
       ),
       'notLike' => array(
         'title' => 'Not Like',
-        'lable' => 'notlike',
+        'lable' => 'not like',
       ),
       'isNull' => array(
         'title' => 'Is empty (NULL)',
@@ -123,7 +123,7 @@ class ViewsUIController {
       ),
       'isNotNull' => array(
         'title' => 'Is not empty (NOT NULL)',
-        'lable' => 'notempty',
+        'lable' => 'not empty',
       ),
     );
     $operators['number'] = array(
@@ -150,6 +150,14 @@ class ViewsUIController {
       'greaterThan' => array(
         'title' => 'Is greater than',
         'lable' => '>',
+      ),
+      'in' => array(
+        'title' => 'Is in',
+        'lable' => 'in',
+      ),
+      'notIn' => array(
+        'title' => 'Is not in',
+        'lable' => 'not in',
       ),
       'between' => array(
         'title' => 'Is between',
@@ -283,8 +291,18 @@ class ViewsUIController {
       if(!empty($parms['view_filters'])){
         foreach ($parms['view_filters'] as $filter) {
           $op = $filter['op'];
-          $query->where()
-          ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
+          if(strpos($filter['value'],'-') !== false && ($filter['op'] == 'between' || $filter['op'] == 'notBetween')){
+            $v = explode('-', $filter['value']);
+            $query->where()
+            ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v[0], $v[1]);
+          }elseif($filter['op'] == 'in' || $filter['op'] == 'notIn') {
+            $v = explode(',', $filter['value']);
+            $query->where()
+            ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v);
+          }else {
+            $query->where()
+            ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
+          }
         }
       }
 
