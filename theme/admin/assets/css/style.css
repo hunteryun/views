@@ -121,7 +121,7 @@ table{border-collapse:collapse;border-spacing:0;}
   font-weight: bold;
 }
 .view-config .form-item button {
-  margin-right: 3px;
+  margin-left: 5px;
 }
 .view-config .input-inline-block {
   display: inline-block;
@@ -204,7 +204,6 @@ select{
   height: 100%;
   vertical-align: top;
   border: none;
-  border-right: 1px solid #ccc;
   resize: none;
   outline: none;
   box-sizing: border-box;
@@ -216,7 +215,7 @@ select{
   background-image: url(../images/stage-north.png);
   height: 10px;
   background-repeat: repeat-x;
-  width: 98%;
+  width: 99%;
   top: 0px;
   left: 10px;
 }
@@ -280,24 +279,30 @@ select{
   display: inline-block;
   vertical-align: middle;
 }
-.view_filters_list {
+.dataintable .sortdate span {
+  display: inline-block;
+  vertical-align: middle;
+  width: 45%;
+  line-height: 20px;
+}
+.view_filters_list, .view_sort_list {
   border: 1px solid #f3f3f3;
   line-height: 20px;
   margin: 10px 0;
 }
-.view_filters_list li {
-  padding: 5px 6px 5px;
+.view_filters_list li, .view_sort_list li {
+  padding: 5px 1px 5px;
   color: #666;
   font-size: 12px;
 }
-.view_filters_list li.even {
+.view_filters_list li.even, .view_sort_list li.even {
   background-color: #f3f5ee;
 }
-.view_filters_list li span {
+.view_filters_list li span, .view_sort_list li span {
   display: inline-block;
   cursor: pointer;
   color: #0074bd;
 }
-.view_filters_list li .destroy {
+.view_filters_list li .btn, .view_sort_list li .btn {
   float: right;
 }

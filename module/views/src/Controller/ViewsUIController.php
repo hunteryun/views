@@ -5,6 +5,7 @@ namespace Hunter\views\Controller;
 use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\Response\JsonResponse;
 use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
+use NilPortugues\Sql\QueryBuilder\Syntax\OrderBy;
 use Hunter\Core\Utility\StringConverter;
 
 /**
@@ -276,8 +277,30 @@ class ViewsUIController {
         }
       }
 
+      if(!empty($parms['view_sorts'])){
+        foreach ($parms['view_sorts'] as $sort) {
+          if(substr($sort['field'],0,strrpos($sort['field'],'.')) == $parms['view_table']){
+            $sort['field'] = str_replace($parms['view_table'].'.','',$sort['field']);
+            $lsorts[] = $sort;
+          }else {
+            $sort['field'] = str_replace($parms['view_relation_table'].'.','',$sort['field']);
+            $rsorts[] = $sort;
+          }
+        }
+      }
+
       $query = $builder->select()->setTable($parms['view_table']);
       $query->setColumns($lfields);
+
+      if(!empty($lsorts)){
+        foreach ($lsorts as $lsort) {
+          if($lsort['value'] == 'desc'){
+            $query->orderBy($lsort['field'], OrderBy::DESC);
+          }else {
+            $query->orderBy($lsort['field'], OrderBy::ASC);
+          }
+        }
+      }
 
       if($rfields){
         $query->innerJoin(
@@ -302,6 +325,16 @@ class ViewsUIController {
           }else {
             $query->where()
             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
+          }
+        }
+      }
+
+      if(!empty($rsorts)){
+        foreach ($rsorts as $rsort) {
+          if($rsort['value'] == 'desc'){
+            $query->orderBy($rsort['field'], OrderBy::DESC, $parms['view_relation_table']);
+          }else {
+            $query->orderBy($rsort['field'], OrderBy::ASC, $parms['view_relation_table']);
           }
         }
       }

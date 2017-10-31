@@ -62,7 +62,9 @@
         <label class="form-label">过滤</label>
         <div class="view_filters_list" v-if="view_filters.length != 0">
           <ul>
-            <li v-for="(filter, key) in view_filters" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }"><span @click="editFilter(filter)">@{{ filter.field }} (@{{ filter.lable +' '+ filter.value }})</span> <button class="destroy" @click="removeFilter(filter, $event)">Remove</button><button class="destroy" @click="editFilter(filter, $event)">Edit</button></li>
+            <li v-for="(filter, key) in view_filters" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }"><span @click="editFilter(filter)">@{{ filter.field }} (@{{ filter.lable +' '+ filter.value }})</span>
+              <button class="btn" @click="removeFilter(filter, $event)">Remove</button>
+              <button class="btn" @click="editFilter(filter, $event)">Edit</button></li>
           </ul>
         </div>
         <div class="input-block" v-if="fields">
@@ -108,6 +110,14 @@
 
       <div class="form-item" pane="" v-if="view_table != ''">
         <label class="form-label">排序</label>
+        <div class="view_sort_list" v-if="view_sorts.length != 0">
+          <ul>
+            <li v-for="(sort, key) in view_sorts" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }"><span @click="editSort(sort)">@{{ sort.field }} (@{{ sort.value }})</span>
+              <button class="btn" @click="removeSort(sort, $event)">Remove</button>
+              <button class="btn" @click="editSort(sort, $event)">Edit</button>
+            </li>
+          </ul>
+        </div>
         <div class="input-block" v-if="fields">
           <table class="dataintable">
             <thead>
@@ -121,17 +131,29 @@
              <tbody>
               <tr>
                 <td class="bsIE">
-                  <select class="form-select" v-model="new_sort_field" @change="updateFilterOp">
-                    <option v-for="(field, key) in fields" :value="key">@{{ field.name }}</option>
+                  <select class="form-select" v-model="new_sort_field" @change="updateSortType">
+                    <option v-for="(field, key) in fields" v-if="field.sortable" :value="key">@{{ field.name }}</option>
                   </select>
                 </td>
                 <td class="bsFirefox">
-                  <select class="form-select">
-                    <option v-for="(op, key) in filter_ops" :value="key">@{{ op.title }}</option>
-                  </select>
+                  <input type="radio" name="new_sort_value" value="asc" v-model="new_sort_value" checked="checked" class="form-radio">ASC
+                  <input type="radio" name="new_sort_value" value="desc" v-model="new_sort_value" class="form-radio">DESC
                 </td>
-                <td class="bsChrome"><input type="text" name="new_sort_value" class="input"></td>
-                <td class="bsChrome"><button class="btn btn-primary btn-mini" @click="addNewFilter">添加</button></td>
+                <td class="bsChrome">
+                  <div class="sortdate" v-if="select_field_sort_type == 'date'">
+                    <span><input type="radio" name="new_sort_date" value="second" v-model="new_sort_date" checked="checked" class="form-radio">Second</span>
+                    <span><input type="radio" name="new_sort_date" value="minute" v-model="new_sort_date" class="form-radio">Minute</span>
+                    <span><input type="radio" name="new_sort_date" value="hour" v-model="new_sort_date" class="form-radio">Hour</span>
+                    <span><input type="radio" name="new_sort_date" value="day" v-model="new_sort_date" class="form-radio">Day</span>
+                    <span><input type="radio" name="new_sort_date" value="month" v-model="new_sort_date" class="form-radio">Month</span>
+                    <span><input type="radio" name="new_sort_date" value="year" v-model="new_sort_date" class="form-radio">Year</span>
+                  </div>
+                </td>
+                <td class="bsChrome">
+                  <button class="btn btn-primary btn-mini" @click="addNewSort" v-if="!edit_sort_mode">添加</button>
+                  <button class="btn btn-primary btn-mini" @click="doneEditSort" v-if="edit_sort_mode">修改</button>
+                  <button class="btn btn-primary btn-mini" @click="cancelEditSort" v-if="edit_sort_mode">取消</button>
+                </td>
               </tr>
             </tbody>
           </table>

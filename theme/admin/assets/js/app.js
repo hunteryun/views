@@ -11,6 +11,7 @@ var App = new Vue({
     view_table: '',
     view_fields: [],
     view_filters: [],
+    view_sorts: [],
     view_template: '',
     view_relation_table: '',
     has_description: false,
@@ -27,13 +28,17 @@ var App = new Vue({
     filters_list: [],
     filter_ops: [],
     new_filter_field: '',
-    new_filter_op: '',
+    new_filter_op: 'equals',
     new_filter_value: '',
     new_sort_field: '',
-    new_sort_op: '',
+    new_sort_value: 'asc',
+    new_sort_date: 'second',
     select_field_filter_type: '',
+    select_field_sort_type: '',
     editedFilter: null,
-    edit_filter_mode: false
+    editedSort: null,
+    edit_filter_mode: false,
+    edit_sort_mode: false
   },
   mounted: function () {
     this.initTablesList();
@@ -130,6 +135,51 @@ var App = new Vue({
       var vm = this;
       vm.view_filters.splice(vm.view_filters.indexOf(filter), 1);
     },
+    addNewSort: function(e) {
+      e.preventDefault();
+      var vm = this;
+      if (vm.new_sort_field == '' || vm.new_sort_value == '') {
+        layer.alert('Please select the sort field！', {icon: 5});
+        return;
+      }
+      vm.view_sorts.push({
+        field: vm.new_sort_field,
+        value: vm.new_sort_value,
+        date: vm.select_field_sort_type ? vm.new_sort_date : '',
+      })
+    },
+    editSort: function (sort, e) {
+      e.preventDefault();
+      var vm = this;
+      vm.new_sort_field = sort.field;
+      vm.new_sort_value = sort.value;
+      vm.new_sort_date = sort.date;
+      vm.editedSort = sort;
+      vm.edit_sort_mode = true;
+    },
+    doneEditSort: function (e) {
+      e.preventDefault();
+      var vm = this;
+      vm.view_sorts.splice(vm.view_sorts.indexOf(vm.editedSort), 1, {
+        field: vm.new_sort_field,
+        value: vm.new_sort_value,
+        date: vm.select_field_sort_type ? vm.new_sort_date : '',
+      });
+      vm.edit_sort_mode = false;
+    },
+    cancelEditSort: function (e) {
+      e.preventDefault();
+      var vm = this;
+      vm.new_sort_field = '';
+      vm.new_sort_value = '';
+      vm.new_sort_date = '';
+      vm.edit_sort_mode = false;
+    },
+    removeSort: function (sort, e) {
+      e.preventDefault();
+      var vm = this;
+      vm.view_sorts.splice(vm.view_sorts.indexOf(sort), 1);
+    },
     cleanLoadTemplates: function(e) {
       e.preventDefault();
       var vm = this;
@@ -173,6 +223,7 @@ var App = new Vue({
         'view_relation_table': vm.view_relation_table,
         'view_fields': vm.view_fields,
         'view_filters': vm.view_filters,
+        'view_sorts': vm.view_sorts,
         'view_template': vm.view_template,
         'template_content': vm.template_content,
         'overwrit_template': vm.overwrit_template,
@@ -211,6 +262,16 @@ var App = new Vue({
       var select_filed = vm.new_filter_field.split(".")[1];
       vm.select_field_filter_type = vm.tables[select_table].fields[select_filed].filter_type;
       vm.filter_ops = vm.filters_list[vm.select_field_filter_type];
+    },
+    updateSortType: function() {
+      var vm = this;
+      var select_table = vm.new_sort_field.split(".")[0];
+      var select_filed = vm.new_sort_field.split(".")[1];
+      if(vm.tables[select_table].fields[select_filed].sorttype){
+        vm.select_field_sort_type = vm.tables[select_table].fields[select_filed].sorttype;
+      }else {
+        vm.select_field_sort_type = '';
+      }
     },
     addRelationshipFields: function() {
       var vm = this;
