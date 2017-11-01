@@ -223,7 +223,7 @@
       </div>
     </form>
     <div class="side-right">
-      <button class="btn" @click="previewResult">预览</button>
+      <button class="btn" @click="previewResult" :disabled="template_content == '' || view_fields.length == 0">预览</button>
       <div class="preview-result" v-html="preview_result"></div>
     </div>
   </div>
