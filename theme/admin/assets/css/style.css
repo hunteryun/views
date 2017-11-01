@@ -306,3 +306,13 @@ select{
 .view_filters_list li .btn, .view_sort_list li .btn {
   float: right;
 }
+.pagination li {
+  display: inline-block;
+  padding: 3px 6px;
+  border: 1px solid #15ADBC;
+  margin-left: 5px;
+}
+.pagination li a {
+  color: #333;
+  text-decoration: none;
+}

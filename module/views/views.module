@@ -190,7 +190,7 @@ function views_get_view($name, $preview = false) {
         $pager['size'] = (int)$view['view_pager']['display'];
         $pager['total'] = COUNT(db_query($view['view_query'], $view['view_query_values'])->fetchAll());
         if($preview){
-          $pager['url'] = '/admin/views/add/preview';
+          $pager['url'] = '/admin/views/add';
         }
         $number_perpage = (int) $view['view_pager']['display'];
 
