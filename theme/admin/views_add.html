@@ -225,6 +225,7 @@
     <div class="side-right">
       <button class="btn" @click="previewResult" :disabled="template_content == '' || view_fields.length == 0">预览</button>
       <div class="preview-result" v-html="preview_result"></div>
+      <div class="preview-note">注：本预览只作为临时效果预览, 分页、样式等效果请在最终调用页面查看.</div>
     </div>
   </div>
   <script src="/theme/admin/assets/js/app.js"></script>

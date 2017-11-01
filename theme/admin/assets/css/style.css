@@ -316,3 +316,8 @@ select{
   color: #333;
   text-decoration: none;
 }
+.preview-note {
+  border-top: 1px solid #ccc;
+  padding-top: 15px;
+  color: #666;
+}
