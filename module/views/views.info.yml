@@ -6,3 +6,4 @@ package: Hunter
 dependencies:
   - config
   - variable
+  - paginator

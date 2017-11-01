@@ -14,6 +14,12 @@ var App = new Vue({
     view_sorts: [],
     view_template: '',
     view_relation_table: '',
+    view_pager: {
+      type: 'display_all',
+      display: 10,
+      offset: 0
+    },
+    has_pager: false,
     has_description: false,
     tables: [],
     templates: [],
@@ -224,6 +230,8 @@ var App = new Vue({
         'view_fields': vm.view_fields,
         'view_filters': vm.view_filters,
         'view_sorts': vm.view_sorts,
+        'has_pager': vm.has_pager,
+        'view_pager': vm.view_pager,
         'view_template': vm.view_template,
         'template_content': vm.template_content,
         'overwrit_template': vm.overwrit_template,
@@ -308,7 +316,6 @@ var App = new Vue({
         }
         htmltext += '  </li>\n  @endforeach\n';
         htmltext += ' </ul>\n</div>\n';
-        vm.template_content = htmltext;
         break;
       case 'table':
         htmltext += '<table class="layui-table">\n <thead>\n  <tr>\n';
@@ -325,8 +332,7 @@ var App = new Vue({
           }
         }
         htmltext += '  </tr>\n  @endforeach\n';
-        htmltext += ' </tbody>\n</table>';
-        vm.template_content = htmltext;
+        htmltext += ' </tbody>\n</table>\n';
         break;
       default:
         if(vm.view_fields != []){
@@ -336,9 +342,12 @@ var App = new Vue({
           }
           htmltext += '@endforeach\n\n';
         }
-        vm.template_content = htmltext;
       }
-  	},
+      if(vm.has_pager && (vm.view_pager.type == 'mini' || vm.view_pager.type == 'full')){
+        htmltext += '{!! hunter_pager($pager) !!}\n';
+      }
+      vm.template_content = htmltext;
+    },
     setCookie: function (name,value) {
         var exp = new Date();
         exp.setTime(exp.getTime() + 1*60*60*1000);

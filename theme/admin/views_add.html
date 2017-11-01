@@ -160,16 +160,22 @@
         </div>
       </div>
 
-      <div class="form-item">
+      <div class="form-item" pane="">
+        <input type="checkbox" name="has_pager" title="描述" v-model="has_pager">使用分页
+      </div>
+
+      <div class="form-item" v-if="has_pager">
         <label class="form-label">分页</label>
         <div class="input-inline">
-          <select name="view_pager" lay-filter="view_pager">
+          <select name="view_pager[type]" v-model="view_pager.type">
             <option value="">请选择分页</option>
-            <option value="mini_pager">迷你分页</option>
-            <option value="full_pager">完整分页</option>
+            <option value="mini">迷你分页</option>
+            <option value="full">完整分页</option>
             <option value="display_all">显示所有</option>
             <option value="display_number">显示部分</option>
           </select>
+          <input type="text" name="view_pager[display]" v-if="view_pager.type != 'display_all'" v-model="view_pager.display">
+          <input type="text" name="view_pager[offset]" v-model="view_pager.offset">
         </div>
       </div>
 

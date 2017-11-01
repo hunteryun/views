@@ -179,6 +179,27 @@ function views_get_view($name, $preview = false) {
   }
 
   if(isset($view['view_query']) && isset($view['view_template'])){
+    if($view['has_pager'] && !empty($view['view_pager'])){
+      $page = isset($_GET['page']) ? $_GET['page'] : 1;
+      $offset = (int)$view['view_pager']['offset'];
+      $number_perpage = 999999;
+
+      if($view['view_pager']['type'] != 'display_all'){
+        $offset = ((int)$page-1) * (int)$view['view_pager']['display'] + (int)$view['view_pager']['offset'];
+        $pager['page'] = $page;
+        $pager['size'] = (int)$view['view_pager']['display'];
+        $pager['total'] = COUNT(db_query($view['view_query'], $view['view_query_values'])->fetchAll());
+        if($preview){
+          $pager['url'] = '/admin/views/add/preview';
+        }
+        $number_perpage = (int) $view['view_pager']['display'];
+
+        theme()->getEnvironment()->addGlobal('pager', $pager);
+      }
+
+      $view['view_query'] = $view['view_query']. ' LIMIT ' . $offset . ', ' . $number_perpage;
+    }
+
     $result = db_query($view['view_query'], $view['view_query_values'])->fetchAll();
 
     if($result) {
