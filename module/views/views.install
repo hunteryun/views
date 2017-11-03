@@ -31,7 +31,7 @@ function views_uninstall() {
   db_delete('variable')
     ->condition(db_or()
       ->condition('name', 'views.view.%', 'LIKE')
-      ->condition('name', 'views_view_cache_%', 'LIKE')
+      ->condition('name', 'views_view_%', 'LIKE')
       ->condition('name', 'views-view-%', 'LIKE')
     )
     ->execute();

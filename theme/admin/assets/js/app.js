@@ -19,6 +19,7 @@ var App = new Vue({
       display: 10,
       offset: 0
     },
+    view_path: '',
     has_pager: false,
     has_description: false,
     tables: [],
@@ -44,12 +45,18 @@ var App = new Vue({
     editedFilter: null,
     editedSort: null,
     edit_filter_mode: false,
-    edit_sort_mode: false
+    edit_sort_mode: false,
+    json_export: false
   },
   mounted: function () {
     this.initTablesList();
     this.initFilterOpList();
     this.initTemplatesList();
+  },
+  computed: {
+    canPreview: function () {
+      return (!this.json_export || this.view_fields.length == 0) && this.template_content == '';
+    }
   },
   methods: {
     initTablesList: function() {
@@ -235,7 +242,9 @@ var App = new Vue({
         'view_template': vm.view_template,
         'template_content': vm.template_content,
         'overwrit_template': vm.overwrit_template,
-        'type': type
+        'type': type,
+        'json_export': vm.json_export,
+        'view_path': vm.view_path
       }).then(function (response) {
           if (response.body.length == false) {
             layer.alert('init error！', {icon: 5});
@@ -333,6 +342,19 @@ var App = new Vue({
         }
         htmltext += '  </tr>\n  @endforeach\n';
         htmltext += ' </tbody>\n</table>\n';
+        break;
+      case 'html5':
+        htmltext += '<!DOCTYPE html>\n<html lang="en">\n<head>\n';
+        htmltext += '  <meta charset="UTF-8">\n  <title>'+vm.view_name+'</title>\n';
+        htmltext += '</head>\n<body>\n';
+        if(vm.view_fields != []){
+          htmltext += '  @foreach($viewdata as $item)\n';
+          for (var i=0; i<vm.view_fields.length; i++){
+            htmltext += '   {{ $item->'+vm.view_fields[i].split(".")[1]+' }}\n';
+          }
+          htmltext += '  @endforeach\n';
+        }
+        htmltext += '</body>\n</html>\n';
         break;
       default:
         if(vm.view_fields != []){

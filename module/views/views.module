@@ -1,6 +1,33 @@
 <?php
 
-use Hunter\Core\Templating\Blade\BladeCompiler;
+use Zend\Diactoros\Response\JsonResponse;
+
+/**
+ * Implements hook_init().
+ */
+function views_init() {
+  global $app;
+
+  $all_views = views_get_all();
+  foreach ($all_views as $view) {
+    if(isset($view['json_export']) && $view['json_export']){
+      $app->getRoutes()->map(['GET','POST'], $view['view_path'], '\Hunter\views\Controller\ViewsUIController::api_get_view');
+    }
+  }
+}
+
+/**
+ * get view by path
+ */
+function views_get_view_bypath($path) {
+  $all_views = views_get_all();
+  foreach ($all_views as $view) {
+    if(isset($view['view_path']) && $view['view_path'] == $path){
+      return $view;
+    }
+  }
+  return false;
+}
 
 /**
  * get all views
@@ -9,7 +36,12 @@ function views_get_all() {
   $list = array();
   $query = db_select('variable', 'v');
   $query->fields('v', array('value'));
-  $query->condition('name', 'views.view.%', 'LIKE');
+  $query->condition(
+    db_or()
+      ->condition('name', 'views.view.%', 'LIKE')
+      ->condition('name', 'views_view_final_%', 'LIKE')
+      ->condition('name', 'views-view-%', 'LIKE')
+  );
   $query->orderBy('name');
   $result = $query->execute()->fetchCol();
 
@@ -202,9 +234,13 @@ function views_get_view($name, $preview = false) {
 
     $result = db_query($view['view_query'], $view['view_query_values'])->fetchAll();
 
-    if($result) {
-      $output = theme()->render($view['view_template'], array('viewdata' => $result));
-      return $output;
+    if(!empty($result)) {
+      if($view['json_export'] == 'false'){
+        $output = theme()->render($view['view_template'], array('viewdata' => $result));
+        return $output;
+      }else{
+        return $result;
+      }
     }
   }
   return false;

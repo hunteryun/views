@@ -161,7 +161,7 @@
       </div>
 
       <div class="form-item" pane="">
-        <input type="checkbox" name="has_pager" title="描述" v-model="has_pager">使用分页
+        <input type="checkbox" name="has_pager" title="使用分页" v-model="has_pager">使用分页
       </div>
 
       <div class="form-item" v-if="has_pager">
@@ -180,38 +180,49 @@
       </div>
 
       <div class="form-item" pane="">
-        <div><label class="form-label">格式化</label></div>
-        <button class="btn btn-primary btn-mini" @click="setTextarea('htmllist', $event)">Html List</button>
-        <button class="btn btn-primary btn-mini" @click="setTextarea('table', $event)">Table</button>
-        <button class="btn btn-primary btn-mini" @click="setTextarea('none', $event)">Unformatted list</button>
-      </div>
-
-      <div class="form-item" pane="">
-        <div><label class="form-label" v-if="view_fields != ''">可用字段</label></div>
-        <button class="btn btn-primary btn-mini" v-for="field in view_fields">@{{ field }}</button>
-      </div>
-
-      <div><label class="form-label">模板</label></div>
-      <input type="radio" id="create_new_template" value="new" v-model="create_new_template">创建新模板
-      <input type="radio" id="create_new_template" value="exist" v-model="create_new_template">使用现成模板
-      <div class="form-item" v-if="create_new_template == 'exist'">
-        <select name="view_table" lay-filter="view_template" v-model="view_template">
-          <option value="">请选择模板</option>
-          <option v-for="(template, index) in templates" :value="template">@{{ index }}</option>
-        </select>
-        <button class="btn btn-primary btn-mini" @click="cleanLoadTemplates">刷新模板缓存</button>
-        <button class="btn btn-primary btn-mini" @click="editThisTemplate">编辑该模板</button>
-      </div>
-
-      <div class="form-item form-text" v-if="show_editor">
-        <div><label class="form-label">编辑模板</label></div>
-        <div class="input-block vx-stage-container">
-          <textarea class="textarea" rows="15" cols="15" v-model="template_content"></textarea>
-          <div class="vx-stage-north"></div>
-          <div class="vx-stage-west"></div>
+        <input type="checkbox" name="json_export" title="API输出" v-model="json_export">API输出
+        <div class="input-block">
+          <div><label class="form-label">路径</label></div>
+          <input type="text" name="view_path" v-model="view_path">
         </div>
-        <div v-if="create_new_template == 'exist'">
-          <input type="checkbox" name="overwrit_template" title="描述" v-model="overwrit_template">覆盖原模板文件
+      </div>
+
+      <div v-if="!json_export">
+        <div class="form-item" pane="">
+          <div><label class="form-label">格式化</label></div>
+          <button class="btn btn-primary btn-mini" @click="setTextarea('htmllist', $event)">Html List</button>
+          <button class="btn btn-primary btn-mini" @click="setTextarea('table', $event)">Table</button>
+          <button class="btn btn-primary btn-mini" @click="setTextarea('none', $event)">Unformatted list</button>
+          <button class="btn btn-primary btn-mini" @click="setTextarea('html5', $event)">HTML5</button>
+        </div>
+
+        <div class="form-item" pane="">
+          <div><label class="form-label" v-if="view_fields != ''">可用字段</label></div>
+          <button class="btn btn-primary btn-mini" v-for="field in view_fields">@{{ field }}</button>
+        </div>
+
+        <div><label class="form-label">模板</label></div>
+        <input type="radio" id="create_new_template" value="new" v-model="create_new_template">创建新模板
+        <input type="radio" id="create_new_template" value="exist" v-model="create_new_template">使用现成模板
+        <div class="form-item" v-if="create_new_template == 'exist'">
+          <select name="view_table" lay-filter="view_template" v-model="view_template">
+            <option value="">请选择模板</option>
+            <option v-for="(template, index) in templates" :value="template">@{{ index }}</option>
+          </select>
+          <button class="btn btn-primary btn-mini" @click="cleanLoadTemplates">刷新模板缓存</button>
+          <button class="btn btn-primary btn-mini" @click="editThisTemplate">编辑该模板</button>
+        </div>
+
+        <div class="form-item form-text" v-if="show_editor">
+          <div><label class="form-label">编辑模板</label></div>
+          <div class="input-block vx-stage-container">
+            <textarea class="textarea" rows="15" cols="15" v-model="template_content"></textarea>
+            <div class="vx-stage-north"></div>
+            <div class="vx-stage-west"></div>
+          </div>
+          <div v-if="create_new_template == 'exist'">
+            <input type="checkbox" name="overwrit_template" title="描述" v-model="overwrit_template">覆盖原模板文件
+          </div>
         </div>
       </div>
 
@@ -223,8 +234,11 @@
       </div>
     </form>
     <div class="side-right">
-      <button class="btn" @click="previewResult" :disabled="template_content == '' || view_fields.length == 0">预览</button>
-      <div class="preview-result" v-html="preview_result"></div>
+      <button class="btn" @click="previewResult" :disabled="canPreview">预览</button>
+      <div class="preview-result">
+        <pre v-if="json_export" v-html="preview_result"></pre>
+        <div v-html="preview_result" v-else></div>
+      </div>
       <div class="preview-note">注：本预览只作为临时效果预览, 分页、样式等效果请在最终调用页面查看.</div>
     </div>
   </div>

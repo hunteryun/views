@@ -209,11 +209,11 @@ class ViewsUIController {
     if($parms = $request->getParsedBody()){
       $result = views_get_view($parms['view_name'], true);
 
-      if(is_string($result)){
-        return new JsonResponse($result);
+      if($result == false){
+        return new JsonResponse('Empty Content !');
       }
 
-      return new JsonResponse('Empty Content !');
+      return new JsonResponse($result);
     }
     return new JsonResponse('Select Error !');
   }
@@ -226,43 +226,45 @@ class ViewsUIController {
    */
   public function api_save_view(ServerRequest $request, GenericBuilder $builder, StringConverter $stringConverter) {
     if($parms = $request->getParsedBody()){
-      if(!empty($parms['view_template'])){
-        if(!empty($parms['template_content']) && $parms['overwrit_template'] == 'true' && $parms['type'] == 'final'){
-          if (!is_dir(dirname($parms['view_template']))){
-            mkdir(dirname($parms['view_template']), 0755, true);
-          }
+      if($parms['json_export'] == 'false'){
+        if(!empty($parms['view_template'])){
+          if(!empty($parms['template_content']) && $parms['overwrit_template'] == 'true' && $parms['type'] == 'final'){
+            if (!is_dir(dirname($parms['view_template']))){
+              mkdir(dirname($parms['view_template']), 0755, true);
+            }
 
-          file_put_contents($parms['view_template'], $parms['template_content']);
-        }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
-          $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_name'];
-          if (!is_dir(dirname($parms['view_template']))){
-            mkdir(dirname($parms['view_template']), 0755, true);
-          }
+            file_put_contents($parms['view_template'], $parms['template_content']);
+          }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
+            $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_name'];
+            if (!is_dir(dirname($parms['view_template']))){
+              mkdir(dirname($parms['view_template']), 0755, true);
+            }
 
-          file_put_contents($parms['view_template'], $parms['template_content']);
-        }elseif (!empty($parms['template_content']) && $parms['type'] == 'final' && $parms['overwrit_template'] == 'false') {
-          $parms['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/'.basename($parms['view_template']);
-          if (!is_dir(dirname($parms['view_template']))){
-            mkdir(dirname($parms['view_template']), 0755, true);
-          }
+            file_put_contents($parms['view_template'], $parms['template_content']);
+          }elseif (!empty($parms['template_content']) && $parms['type'] == 'final' && $parms['overwrit_template'] == 'false') {
+            $parms['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/'.basename($parms['view_template']);
+            if (!is_dir(dirname($parms['view_template']))){
+              mkdir(dirname($parms['view_template']), 0755, true);
+            }
 
-          file_put_contents($parms['view_template'], $parms['template_content']);
-        }
-      }else {
-        if(!empty($parms['template_content']) && $parms['type'] == 'final'){
-          $view_machine_name = $stringConverter->createMachineName($parms['view_name']);
-          $parms['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/views-view-'.$view_machine_name.'.html';
-          if (!is_dir(dirname($parms['view_template']))){
-            mkdir(dirname($parms['view_template']), 0755, true);
+            file_put_contents($parms['view_template'], $parms['template_content']);
           }
+        }else {
+          if(!empty($parms['template_content']) && $parms['type'] == 'final'){
+            $view_machine_name = $stringConverter->createMachineName($parms['view_name']);
+            $parms['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/views-view-'.$view_machine_name.'.html';
+            if (!is_dir(dirname($parms['view_template']))){
+              mkdir(dirname($parms['view_template']), 0755, true);
+            }
 
-          file_put_contents($parms['view_template'], $parms['template_content']);
-        }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
-          $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_name'];
-          if (!is_dir(dirname($parms['view_template']))){
-            mkdir(dirname($parms['view_template']), 0755, true);
+            file_put_contents($parms['view_template'], $parms['template_content']);
+          }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
+            $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_name'];
+            if (!is_dir(dirname($parms['view_template']))){
+              mkdir(dirname($parms['view_template']), 0755, true);
+            }
+            file_put_contents($parms['view_template'], $parms['template_content']);
           }
-          file_put_contents($parms['view_template'], $parms['template_content']);
         }
       }
 
@@ -347,7 +349,11 @@ class ViewsUIController {
       }
 
       if($parms['type'] == 'temp'){
-        return new JsonResponse($parms['view_template']);
+        if($parms['json_export'] == 'true'){
+          return new JsonResponse('json_export');
+        }else {
+          return new JsonResponse($parms['view_template']);
+        }
       }
 
       return new JsonResponse(true);
@@ -391,4 +397,50 @@ class ViewsUIController {
     return new JsonResponse($list);
   }
 
+  /**
+   * api_get_view.
+   *
+   * @return string
+   *   Return api_get_view string.
+   */
+   public function api_get_view(ServerRequest $request) {
+     $view = views_get_view_bypath(request_uri());
+     if($view){
+       if(isset($view['view_query']) && isset($view['view_template'])){
+         if($view['has_pager'] && !empty($view['view_pager'])){
+           $page = isset($_GET['page']) ? $_GET['page'] : 1;
+           $offset = (int)$view['view_pager']['offset'];
+           $number_perpage = 999999;
+
+           if($view['view_pager']['type'] != 'display_all'){
+             $offset = ((int)$page-1) * (int)$view['view_pager']['display'] + (int)$view['view_pager']['offset'];
+             $pager['page'] = $page;
+             $pager['size'] = (int)$view['view_pager']['display'];
+             $pager['total'] = COUNT(db_query($view['view_query'], $view['view_query_values'])->fetchAll());
+             if($preview){
+               $pager['url'] = '/admin/views/add';
+             }
+             $number_perpage = (int) $view['view_pager']['display'];
+
+             theme()->getEnvironment()->addGlobal('pager', $pager);
+           }
+
+           $view['view_query'] = $view['view_query']. ' LIMIT ' . $offset . ', ' . $number_perpage;
+         }
+
+         $result = db_query($view['view_query'], $view['view_query_values'])->fetchAll();
+         if(!empty($result)) {
+           if($view['json_export'] == 'false'){
+             $output = theme()->render($view['view_template'], array('viewdata' => $result));
+             return $output;
+           }else{
+             return new JsonResponse($result);
+           }
+         }else {
+           return 'Empty Content !';
+         }
+       }
+     }
+     return false;
+   }
 }
