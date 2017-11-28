@@ -4,6 +4,5 @@ description: Create customized lists and queries from your database.
 core: 1.x
 package: Hunter
 dependencies:
-  - config
   - variable
   - paginator

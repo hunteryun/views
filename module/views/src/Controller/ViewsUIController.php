@@ -22,7 +22,7 @@ class ViewsUIController {
    */
   public function views_list() {
     $list = views_get_all();
-    return view('/admin/views_list.html', array('list' => $list));
+    return view('/admin/views-list.html', array('list' => $list));
   }
 
   /**
@@ -33,7 +33,7 @@ class ViewsUIController {
    */
   public function views_add_view() {
     $tables = _views_get_tables();
-    return view('/admin/views_add.html', array('tables' => $tables));
+    return view('/admin/views-add.html', array('tables' => $tables));
   }
 
   /**
@@ -56,7 +56,7 @@ class ViewsUIController {
     $view_name = 'views.view.'.$view.'.yml';
     $view_config = get_view_byname($view_name);
     $tables = _views_get_tables();
-    return view('/admin/views_edit.html', array('tables' => $tables, 'view' => $view_config));
+    return view('/admin/views-edit.html', array('tables' => $tables, 'view' => $view_config));
   }
 
   /**
@@ -395,6 +395,18 @@ class ViewsUIController {
     }
 
     return new JsonResponse($list);
+  }
+
+  /**
+   * api_get_permissions.
+   *
+   * @return string
+   *   Return api_get_permissions string.
+   */
+  public function api_get_permissions(ServerRequest $request) {
+    global $app;
+    $permissions = array_keys($app->getPermissionsList());
+    return new JsonResponse($permissions);
   }
 
   /**

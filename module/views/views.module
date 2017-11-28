@@ -13,6 +13,10 @@ function views_init() {
     if(isset($view['json_export']) && $view['json_export']){
       $app->getRoutes()->map(['GET','POST'], $view['view_path'], '\Hunter\views\Controller\ViewsUIController::api_get_view');
     }
+
+    if(isset($view['view_permissions']) && $view['view_permissions']){
+      $app->addRoutePermission($view['view_path'], $view['view_permissions']);
+    }
   }
 }
 
@@ -40,7 +44,6 @@ function views_get_all() {
     db_or()
       ->condition('name', 'views.view.%', 'LIKE')
       ->condition('name', 'views_view_final_%', 'LIKE')
-      ->condition('name', 'views-view-%', 'LIKE')
   );
   $query->orderBy('name');
   $result = $query->execute()->fetchCol();
@@ -114,8 +117,8 @@ function _views_internal_tables() {
     );
   }
 
-  $tables['users'] = array(
-    'name' => 'users',
+  $tables['user'] = array(
+    'name' => 'user',
     'provider' => 'internal', // won't show up in external list.
     'join' => array(
       'left' => array(
@@ -133,7 +136,7 @@ function _views_internal_tables() {
         'sortable' => true,
         'filter_type' => 'number',
       ),
-      'name' => array(
+      'username' => array(
         'name' => 'User Name',
         'sortable' => true,
         'filter_type' => 'string',
@@ -166,8 +169,8 @@ function _views_internal_tables() {
     ),
   );
 
-  $tables['users_roles'] = array(
-    'name' => 'users_role',
+  $tables['user_roles'] = array(
+    'name' => 'user_role',
     'provider' => 'internal', // won't show up in external list.
     'join' => array(
       'left' => array(

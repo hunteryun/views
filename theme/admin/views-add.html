@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Views</title>
-  <link rel="stylesheet" href="/theme/admin/assets/css/style.css">
+  <link rel="stylesheet" href="/theme/admin/assets/css/views.css">
   <script src="/theme/admin/assets/js/jquery.min.js"></script>
   <script src="/theme/admin/assets/js/layer/layer.js"></script>
   <script src="/theme/admin/assets/js/vue.js"></script>
@@ -187,6 +187,16 @@
         </div>
       </div>
 
+      <div class="form-item" pane="">
+        <input type="checkbox" name="need_permission" title="设置权限" v-model="need_permission" @change="scanPermission">设置权限
+        <div class="input-block" v-if="need_permission">
+          <select name="view_table" v-model="view_permissions">
+            <option value="">选择权限(可多选)</option>
+            <option v-for="perm in permissions" :value="perm">@{{ perm }}</option>
+          </select>
+        </div>
+      </div>
+
       <div v-if="!json_export">
         <div class="form-item" pane="">
           <div><label class="form-label">格式化</label></div>
@@ -205,7 +215,7 @@
         <input type="radio" id="create_new_template" value="new" v-model="create_new_template">创建新模板
         <input type="radio" id="create_new_template" value="exist" v-model="create_new_template">使用现成模板
         <div class="form-item" v-if="create_new_template == 'exist'">
-          <select name="view_table" lay-filter="view_template" v-model="view_template">
+          <select name="view_table" v-model="view_template">
             <option value="">请选择模板</option>
             <option v-for="(template, index) in templates" :value="template">@{{ index }}</option>
           </select>

@@ -78,6 +78,14 @@ views.viewsui_api_ge_template_content:
   requirements:
     _permission: 'access admin page'
 
+views.viewsui_api_get_permissions:
+  path: '/admin/api/permissions'
+  defaults:
+    _controller: '\Hunter\views\Controller\ViewsUIController::api_get_permissions'
+    _title: 'Api get permissions'
+  requirements:
+    _permission: 'access admin page'
+
 views.viewsui_api_save_view:
   path: '/admin/api/save-view'
   defaults:

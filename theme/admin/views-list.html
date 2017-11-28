@@ -19,8 +19,9 @@
     <thead>
       <tr>
         <th>名称</th>
-        <th>机器名</th>
         <th>描述</th>
+        <th>类型</th>
+        <th>路径</th>
         <th>操作</th>
       </tr>
     </thead>
@@ -28,9 +29,10 @@
       @if(!empty($list))
       @foreach ($list as $v)
       <tr>
-        <td>{{ $v['label'] }}</td>
-        <td>{{ $v['id'] }}</td>
-        <td>{{ $v['description'] }}</td>
+        <td>{{ $v['view_name'] }}</td>
+        <td>{{ $v['view_description'] }}</td>
+        <td>{{ $v['json_export'] ? 'API' : 'Page' }}</td>
+        <td>{{ $v['view_path'] }}</td>
         <td>
           <a class="layui-btn layui-btn-mini" onclick="editView('{{ $v['id'] }}')">编辑</a>
           <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
