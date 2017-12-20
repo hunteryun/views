@@ -10,12 +10,12 @@ function views_init() {
 
   $all_views = views_get_all();
   foreach ($all_views as $view) {
-    if(isset($view['json_export']) && $view['json_export']){
-      $app->getRoutes()->map(['GET','POST'], $view['view_path'], '\Hunter\views\Controller\ViewsUIController::api_get_view');
+    if(isset($view['view_path']) && $view['view_path']){
+      $route = $app->getRoutes()->map(['GET','POST'], $view['view_path'], '\Hunter\views\Controller\ViewsUIController::api_get_view');
     }
 
-    if(isset($view['view_permissions']) && $view['view_permissions']){
-      $app->addRoutePermission($view['view_path'], $view['view_permissions']);
+    if(is_object($route) && isset($view['view_permissions']) && $view['view_permissions']){
+      $app->addRoutePermission($route, $view['view_path'], $view['view_permissions']);
     }
   }
 }

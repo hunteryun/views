@@ -34,8 +34,8 @@
         <td>{{ $v['json_export'] ? 'API' : 'Page' }}</td>
         <td>{{ $v['view_path'] }}</td>
         <td>
-          <a class="layui-btn layui-btn-mini" onclick="editView('{{ $v['id'] }}')">编辑</a>
-          <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+          <a class="layui-btn layui-btn-xs" onclick="editView('{{ $v['id'] }}')">编辑</a>
+          <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
         </td>
       </tr>
       @endforeach

@@ -6,7 +6,8 @@ Vue.http.options.emulateJSON = true;
 var App = new Vue({
   el: '#App',
   data: {
-    view_name: 'default',
+    view_name: '',
+    view_machine_name: 'default',
     view_description: '',
     view_table: '',
     view_fields: [],
@@ -21,10 +22,7 @@ var App = new Vue({
     },
     view_path: '',
     view_permissions: [],
-    view_permissions: [],
-    view_permissions: [],
     has_pager: false,
-    has_description: false,
     tables: [],
     templates: [],
     template_content: '',
@@ -49,9 +47,15 @@ var App = new Vue({
     editedSort: null,
     edit_filter_mode: false,
     edit_sort_mode: false,
+    edit_machine_name: false,
     json_export: false,
     need_permission: false,
     permissions: []
+  },
+  watch: {
+    view_name: function (newName) {
+      this.getMachineName()
+    }
   },
   mounted: function () {
     this.initTablesList();
@@ -98,6 +102,24 @@ var App = new Vue({
         layer.alert('init error！', {icon: 5});
       });
   	},
+    getMachineName: _.debounce(
+      function () {
+        var vm = this;
+        vm.$http.post('/admin/api/machine-name', {name:vm.view_name}).then(function (response) {
+          if (response.body.length != 0) {
+            vm.view_machine_name = response.body;
+          }
+        }, function (response) {
+          layer.alert('create error！', {icon: 5});
+        });
+      },
+      // 这是我们为判定用户停止输入等待的毫秒数
+      1000
+    ),
+    editMachineName: function(){
+      var vm = this;
+      vm.edit_machine_name = !vm.edit_machine_name;
+    },
     addNewFilter: function(e) {
       e.preventDefault();
       var vm = this;
@@ -218,7 +240,7 @@ var App = new Vue({
     getPreviewResult: function() {
       var vm = this;
       vm.$http.post('/admin/api/query-result', {
-        'view_name': vm.view_name
+        'view_machine_name': vm.view_machine_name
       }).then(function (response) {
         if (response.body.length == false) {
           layer.alert('preview error！', {icon: 5});
@@ -232,8 +254,12 @@ var App = new Vue({
     saveView: function(type, e) {
       e.preventDefault();
       var vm = this;
+      if(vm.need_permission){
+        vm.view_permissions = $(".dropdown-permission-list select").val();
+      }
       vm.$http.post('/admin/api/save-view', {
         'view_name': vm.view_name,
+        'view_machine_name': vm.view_machine_name,
         'view_description': vm.view_description,
         'view_table': vm.view_table,
         'view_relation_table': vm.view_relation_table,
@@ -247,7 +273,8 @@ var App = new Vue({
         'overwrit_template': vm.overwrit_template,
         'type': type,
         'json_export': vm.json_export,
-        'view_path': vm.view_path
+        'view_path': vm.view_path,
+        'view_permissions': vm.view_permissions
       }).then(function (response) {
           if (response.body.length == false) {
             layer.alert('init error！', {icon: 5});
@@ -318,6 +345,10 @@ var App = new Vue({
         vm.$http.post('/admin/api/permissions').then(function (response) {
           if (response.body.length != 0) {
             vm.permissions = response.body;
+            $('.dropdown-permission-list').dropdown({
+              data: response.body,
+              searchable: false,
+            });
           }
         }, function (response) {
           layer.alert('init error！', {icon: 5});

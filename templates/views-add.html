@@ -5,10 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Views</title>
   <link rel="stylesheet" href="/theme/admin/assets/css/views.css">
+  <link rel="stylesheet" href="/theme/admin/assets/css/jquery.dropdown.css">
   <script src="/theme/admin/assets/js/jquery.min.js"></script>
   <script src="/theme/admin/assets/js/layer/layer.js"></script>
   <script src="/theme/admin/assets/js/vue.js"></script>
   <script src="/theme/admin/assets/js/vue-resource.js"></script>
+  <script src="/theme/admin/assets/js/lodash.min.js"></script>
+  <script src="/theme/admin/assets/js/jquery.dropdown.js"></script>
 </head>
 <body>
   <div class="header">
@@ -20,10 +23,21 @@
         <label class="form-label">名称</label>
         <div class="input-inline-block">
           <input type="text" name="view_name" v-model="view_name">
+          <span class="machine_name" v-show="view_name != '' && !edit_machine_name">机器名: @{{ view_machine_name }} [<a href="#" @click.prevent="editMachineName">编辑</a>]</span>
         </div>
-        <div class="input-inline-block">
-          <input type="checkbox" name="has_description" title="描述" v-model="has_description">描述
-          <input type="text" name="view_description" v-if="has_description" v-model="view_description">
+      </div>
+
+      <div class="form-item" v-show="view_name != '' && edit_machine_name">
+        <label class="form-label">机器名</label>
+        <div class="input-block">
+          <input type="text" class="machine_name" name="view_machine_name" :value="view_machine_name">
+        </div>
+      </div>
+
+      <div class="form-item">
+        <label class="form-label">描述</label>
+        <div class="input-block">
+           <textarea name="view_description" class="description-textarea" v-model="view_description"></textarea>
         </div>
       </div>
 
@@ -189,11 +203,8 @@
 
       <div class="form-item" pane="">
         <input type="checkbox" name="need_permission" title="设置权限" v-model="need_permission" @change="scanPermission">设置权限
-        <div class="input-block" v-if="need_permission">
-          <select name="view_table" v-model="view_permissions">
-            <option value="">选择权限(可多选)</option>
-            <option v-for="perm in permissions" :value="perm">@{{ perm }}</option>
-          </select>
+        <div class="dropdown-permission-list" v-if="need_permission">
+          <select name="view_permission" multiple placeholder="请选择权限(可多选)"></select>
         </div>
       </div>
 
@@ -226,7 +237,7 @@
         <div class="form-item form-text" v-if="show_editor">
           <div><label class="form-label">编辑模板</label></div>
           <div class="input-block vx-stage-container">
-            <textarea class="textarea" rows="15" cols="15" v-model="template_content"></textarea>
+            <textarea class="template-textarea" rows="15" cols="15" v-model="template_content"></textarea>
             <div class="vx-stage-north"></div>
             <div class="vx-stage-west"></div>
           </div>

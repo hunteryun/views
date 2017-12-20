@@ -38,6 +38,14 @@ views.viewsui_views_view_delete:
   requirements:
     _permission: 'access admin page'
 
+views.viewsui_api_get_machine_name:
+  path: '/admin/api/machine-name'
+  defaults:
+    _controller: '\Hunter\views\Controller\ViewsUIController::api_get_machine_name'
+    _title: 'Api get machinename'
+  requirements:
+    _permission: 'access admin page'
+
 views.viewsui_api_get_tables:
   path: '/admin/api/tables'
   defaults:

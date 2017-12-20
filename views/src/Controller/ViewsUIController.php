@@ -53,8 +53,8 @@ class ViewsUIController {
    *   Return views_view_edit string.
    */
   public function views_view_edit($view) {
-    $view_name = 'views.view.'.$view.'.yml';
-    $view_config = get_view_byname($view_name);
+    $view_machine_name = 'views.view.'.$view.'.yml';
+    $view_config = get_view_byname($view_machine_name);
     $tables = _views_get_tables();
     return view('/admin/views-edit.html', array('tables' => $tables, 'view' => $view_config));
   }
@@ -66,9 +66,9 @@ class ViewsUIController {
    *   Return views_view_save string.
    */
   public function views_view_save($parms) {
-    $stringConverter = new StringConverter();
     if($parms) {
-      $view_machine_name = $stringConverter->createMachineName($parms['view_name']);
+      $string = new StringConverter();
+      $view_machine_name = $string->createMachineName($parms['view_name']);
       variable_set('views_view_'.$parms['type'].'_'.$view_machine_name, $parms);
     }
   }
@@ -81,6 +81,20 @@ class ViewsUIController {
    */
   public function views_view_delete($view) {
     return 'Implement method: views_view_delete with parameter(s): '.$view;
+  }
+
+  /**
+   * api_get_tables.
+   *
+   * @return string
+   *   Return api_get_tables string.
+   */
+  public function api_get_machine_name(ServerRequest $request, StringConverter $string) {
+    if($parms = $request->getParsedBody()){
+      $machine_name = $string->createMachineName($parms['name']);
+      return new JsonResponse($machine_name);
+    }
+    return new JsonResponse(false);
   }
 
   /**
@@ -207,7 +221,7 @@ class ViewsUIController {
    */
   public function api_get_query_result(ServerRequest $request, GenericBuilder $builder) {
     if($parms = $request->getParsedBody()){
-      $result = views_get_view($parms['view_name'], true);
+      $result = views_get_view($parms['view_machine_name'], true);
 
       if($result == false){
         return new JsonResponse('Empty Content !');
@@ -224,7 +238,7 @@ class ViewsUIController {
    * @return string
    *   Return api_save_view string.
    */
-  public function api_save_view(ServerRequest $request, GenericBuilder $builder, StringConverter $stringConverter) {
+  public function api_save_view(ServerRequest $request, GenericBuilder $builder, StringConverter $string) {
     if($parms = $request->getParsedBody()){
       if($parms['json_export'] == 'false'){
         if(!empty($parms['view_template'])){
@@ -235,7 +249,7 @@ class ViewsUIController {
 
             file_put_contents($parms['view_template'], $parms['template_content']);
           }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
-            $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_name'];
+            $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_machine_name'];
             if (!is_dir(dirname($parms['view_template']))){
               mkdir(dirname($parms['view_template']), 0755, true);
             }
@@ -251,7 +265,7 @@ class ViewsUIController {
           }
         }else {
           if(!empty($parms['template_content']) && $parms['type'] == 'final'){
-            $view_machine_name = $stringConverter->createMachineName($parms['view_name']);
+            $view_machine_name = $string->createMachineName($parms['view_machine_name']);
             $parms['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/views-view-'.$view_machine_name.'.html';
             if (!is_dir(dirname($parms['view_template']))){
               mkdir(dirname($parms['view_template']), 0755, true);
@@ -259,7 +273,7 @@ class ViewsUIController {
 
             file_put_contents($parms['view_template'], $parms['template_content']);
           }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
-            $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_name'];
+            $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_machine_name'];
             if (!is_dir(dirname($parms['view_template']))){
               mkdir(dirname($parms['view_template']), 0755, true);
             }
@@ -405,7 +419,13 @@ class ViewsUIController {
    */
   public function api_get_permissions(ServerRequest $request) {
     global $app;
-    $permissions = array_keys($app->getPermissionsList());
+    $permissions = array();
+    foreach ($app->getPermissionsList() as $key => $item) {
+      $permissions[] = array(
+        'id' => $key,
+        'name' => $item['title']
+      );
+    }
     return new JsonResponse($permissions);
   }
 
