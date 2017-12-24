@@ -264,5 +264,6 @@
     </div>
   </div>
   <script src="{{ asset('theme/admin/assets/js/app.js') }}"></script>
+  {!! phptojs()->put(['base_path' => base_path()])->getJsVars(); !!}
 </body>
 </html>
