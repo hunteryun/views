@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>Views</title>
-  <link rel="stylesheet" href="{{ asset('theme/admin/assets/css/views.css') }}">
-  <link rel="stylesheet" href="{{ asset('theme/admin/assets/css/jquery.dropdown.css') }}">
-  <script src="{{ asset('theme/admin/assets/js/jquery.min.js') }}"></script>
-  <script src="{{ asset('theme/admin/assets/js/layer/layer.js') }}"></script>
-  <script src="{{ asset('theme/admin/assets/js/vue.js') }}"></script>
-  <script src="{{ asset('theme/admin/assets/js/vue-resource.js') }}"></script>
-  <script src="{{ asset('theme/admin/assets/js/lodash.min.js') }}"></script>
-  <script src="{{ asset('theme/admin/assets/js/jquery.dropdown.js') }}"></script>
+  <title>Views Add</title>
+  <base href="{{ base_path() }}">
+  <link rel="stylesheet" href="theme/admin/assets/css/views.css">
+  <link rel="stylesheet" href="theme/admin/assets/css/jquery.dropdown.css">
+  <script src="theme/admin/assets/js/jquery.min.js"></script>
+  <script src="theme/admin/assets/js/layer/layer.js"></script>
+  <script src="theme/admin/assets/js/vue.js"></script>
+  <script src="theme/admin/assets/js/vue-resource.js"></script>
+  <script src="theme/admin/assets/js/lodash.min.js"></script>
+  <script src="theme/admin/assets/js/jquery.dropdown.js"></script>
+  {!! phptojs()->put(['base_path' => base_path()])->getJsVars(); !!}
 </head>
 <body>
   <div class="header">
@@ -259,11 +261,11 @@
       <div class="preview-result">
         <pre v-if="json_export" v-html="preview_result"></pre>
         <div v-html="preview_result" v-else></div>
+        <div class="show-query-sql"></div>
       </div>
       <div class="preview-note">注：本预览只作为临时效果预览, 分页、样式等效果请在最终调用页面查看.</div>
     </div>
   </div>
-  <script src="{{ asset('theme/admin/assets/js/app.js') }}"></script>
-  {!! phptojs()->put(['base_path' => base_path()])->getJsVars(); !!}
+  <script src="theme/admin/assets/js/app.js"></script>
 </body>
 </html>

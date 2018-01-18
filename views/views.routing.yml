@@ -22,6 +22,14 @@ views.viewsui_views_settings:
   requirements:
     _permission: 'access admin page'
 
+views.viewsui_views_view_export:
+  path: '/admin/views/view/{view}/export'
+  defaults:
+    _controller: '\Hunter\views\Controller\ViewsUIController::views_view_export'
+    _title: 'Export view'
+  requirements:
+    _permission: 'access admin page'
+
 views.viewsui_views_view_edit:
   path: '/admin/views/view/{view}/edit'
   defaults:
@@ -99,5 +107,13 @@ views.viewsui_api_save_view:
   defaults:
     _controller: '\Hunter\views\Controller\ViewsUIController::api_save_view'
     _title: 'Api save view'
+  requirements:
+    _permission: 'access admin page'
+
+views.viewsui_api_get_views_setting:
+  path: '/admin/api/views/setting'
+  defaults:
+    _controller: '\Hunter\views\Controller\ViewsUIController::api_get_views_setting'
+    _title: 'Api get views setting'
   requirements:
     _permission: 'access admin page'

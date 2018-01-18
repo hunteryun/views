@@ -22,6 +22,7 @@ var App = new Vue({
     },
     view_path: '',
     view_permissions: [],
+    settings: [],
     has_pager: false,
     tables: [],
     templates: [],
@@ -58,6 +59,7 @@ var App = new Vue({
     }
   },
   mounted: function () {
+    this.initViewsSetting();
     this.initTablesList();
     this.initFilterOpList();
     this.initTemplatesList();
@@ -68,9 +70,21 @@ var App = new Vue({
     }
   },
   methods: {
+    initViewsSetting: function() {
+      var vm = this;
+      vm.$http.get('admin/api/views/setting').then(function (response) {
+          if (response.body.length == 0) {
+            layer.alert('init error！', {icon: 5});
+          } else {
+            vm.settings = response.body;
+          }
+      }, function (response) {
+          layer.alert('init error！', {icon: 5});
+      });
+    },
     initTablesList: function() {
       var vm = this;
-      vm.$http.get(base_path+'admin/api/tables').then(function (response) {
+      vm.$http.get('admin/api/tables').then(function (response) {
           if (response.body.length == 0) {
             layer.alert('init error！', {icon: 5});
           } else {
@@ -82,7 +96,7 @@ var App = new Vue({
     },
     initFilterOpList: function() {
       var vm = this;
-      vm.$http.get(base_path+'admin/api/filter-ops').then(function (response) {
+      vm.$http.get('admin/api/filter-ops').then(function (response) {
         if (response.body.length == 0) {
           layer.alert('init error！', {icon: 5});
         } else {
@@ -94,7 +108,7 @@ var App = new Vue({
   	},
     initTemplatesList: function() {
       var vm = this;
-      vm.$http.post(base_path+'admin/api/templates').then(function (response) {
+      vm.$http.post('admin/api/templates').then(function (response) {
         if (response.body.length != 0) {
           vm.templates = response.body;
         }
@@ -105,7 +119,7 @@ var App = new Vue({
     getMachineName: _.debounce(
       function () {
         var vm = this;
-        vm.$http.post(base_path+'admin/api/machine-name', {name:vm.view_name}).then(function (response) {
+        vm.$http.post('admin/api/machine-name', {name:vm.view_name}).then(function (response) {
           if (response.body.length != 0) {
             vm.view_machine_name = response.body;
           }
@@ -221,7 +235,7 @@ var App = new Vue({
     cleanLoadTemplates: function(e) {
       e.preventDefault();
       var vm = this;
-      vm.$http.post(base_path+'admin/api/templates', {'rescan': true}).then(function (response) {
+      vm.$http.post('admin/api/templates', {'rescan': true}).then(function (response) {
         if (response.body.length == 0) {
           layer.alert('init error！', {icon: 5});
         } else {
@@ -239,7 +253,7 @@ var App = new Vue({
     },
     getPreviewResult: function() {
       var vm = this;
-      vm.$http.post(base_path+'admin/api/query-result', {
+      vm.$http.post('admin/api/query-result', {
         'view_machine_name': vm.view_machine_name
       }).then(function (response) {
         if (response.body.length == false) {
@@ -257,7 +271,7 @@ var App = new Vue({
       if(vm.need_permission){
         vm.view_permissions = $(".dropdown-permission-list select").val();
       }
-      vm.$http.post(base_path+'admin/api/save-view', {
+      vm.$http.post('admin/api/save-view', {
         'view_name': vm.view_name,
         'view_machine_name': vm.view_machine_name,
         'view_description': vm.view_description,
@@ -329,7 +343,7 @@ var App = new Vue({
     editThisTemplate: function(e) {
       e.preventDefault();
       var vm = this;
-      vm.$http.post(base_path+'admin/api/get-template-content', {'file_name': vm.view_template}).then(function (response) {
+      vm.$http.post('admin/api/get-template-content', {'file_name': vm.view_template}).then(function (response) {
           if (response.body.length == 0) {
             layer.alert('init error！', {icon: 5});
           } else {
@@ -342,7 +356,7 @@ var App = new Vue({
     scanPermission: function() {
       var vm = this;
       if(vm.need_permission){
-        vm.$http.post(base_path+'admin/api/permissions').then(function (response) {
+        vm.$http.post('admin/api/permissions').then(function (response) {
           if (response.body.length != 0) {
             vm.permissions = response.body;
             $('.dropdown-permission-list').dropdown({

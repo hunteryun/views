@@ -7,6 +7,7 @@ use Zend\Diactoros\Response\JsonResponse;
 use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 use NilPortugues\Sql\QueryBuilder\Syntax\OrderBy;
 use Hunter\Core\Utility\StringConverter;
+use Hunter\Core\Serialization\Yaml;
 
 /**
  * Class ViewsUI.
@@ -42,8 +43,27 @@ class ViewsUIController {
    * @return string
    *   Return views_settings string.
    */
-  public function views_settings() {
-    return 'Implement method: views_settings';
+public function views_settings(ServerRequest $request) {
+    if ($parms = $request->getParsedBody()) {
+      variable_set('views_show_sql', $parms['views_show_sql']);
+      return true;
+    }
+
+    $form['views_show_sql'] = array(
+      '#type' => 'checkboxes',
+      '#title' => '显示SQL查询',
+      '#required' => TRUE,
+      '#default_value' => variable_get('views_show_sql', 0),
+      '#options' => array('1' => '启用'),
+      '#attributes' => array('lay-skin' => 'primary', 'value' => '1'),
+    );
+    $form['save'] = array(
+     '#type' => 'submit',
+     '#value' => t('Save'),
+     '#attributes' => array('lay-submit' => '', 'lay-filter' => 'ViewsConfigUpdate'),
+    );
+
+    return view('/admin/views-settings.html', array('form' => $form));
   }
 
   /**
@@ -53,10 +73,23 @@ class ViewsUIController {
    *   Return views_view_edit string.
    */
   public function views_view_edit($view) {
-    $view_machine_name = 'views.view.'.$view.'.yml';
-    $view_config = get_view_byname($view_machine_name);
+    $view_machine_name = 'views_view_final_'.$view;
+    $view_config = variable_get($view_machine_name);
     $tables = _views_get_tables();
     return view('/admin/views-edit.html', array('tables' => $tables, 'view' => $view_config));
+  }
+
+  /**
+   * views_view_export.
+   *
+   * @return string
+   *   Return views_view_export string.
+   */
+  public function views_view_export($view) {
+    $view_machine_name = 'views_view_final_'.$view;
+    $view_config = variable_get($view_machine_name);
+    $export_yml = Yaml::encode($view_config);
+    hunter_download('sites/tmp/views/views_view_'.$view.'.yml', $export_yml);
   }
 
   /**
@@ -430,12 +463,23 @@ class ViewsUIController {
   }
 
   /**
+   * api_get_views_setting.
+   *
+   * @return string
+   *   Return api_get_views_setting string.
+   */
+  public function api_get_views_setting(ServerRequest $request) {
+    $setting['views_show_sql'] = variable_get('views_show_sql', 0);
+    return new JsonResponse($setting);
+  }
+
+  /**
    * api_get_view.
    *
    * @return string
    *   Return api_get_view string.
    */
-   public function api_get_view(ServerRequest $request) {
+   public function api_get_view(ServerRequest $request, $vars) {
      $view = views_get_view_bypath(request_uri());
      if($view){
        if(isset($view['view_query']) && isset($view['view_template'])){
@@ -458,6 +502,13 @@ class ViewsUIController {
            }
 
            $view['view_query'] = $view['view_query']. ' LIMIT ' . $offset . ', ' . $number_perpage;
+         }
+
+         foreach ($view['view_query_values'] as $key => $value) {
+           if(strpos($value,':::') !== false){
+             $v = explode(':::', $value);
+             $view['view_query_values'][$key] = $vars[$v[0]];
+           }
          }
 
          $result = db_query($view['view_query'], $view['view_query_values'])->fetchAll();

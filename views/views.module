@@ -7,7 +7,7 @@ use Zend\Diactoros\Response\JsonResponse;
  */
 function views_init() {
   global $app;
-
+  $route = '';
   $all_views = views_get_all();
   foreach ($all_views as $view) {
     if(isset($view['view_path']) && $view['view_path']){
@@ -28,6 +28,11 @@ function views_get_view_bypath($path) {
   foreach ($all_views as $view) {
     if(isset($view['view_path']) && $view['view_path'] == $path){
       return $view;
+    }
+    if($curpath = preg_replace("/\{.*\}/", "([^/]+)", $view['view_path'])){
+      if(preg_match("~^(?|".$curpath.")$~", $path, $matches)){
+        return $view;
+      }
     }
   }
   return false;
@@ -72,20 +77,6 @@ function views_get_templates() {
 
   return $list;
 }
-
-/**
- * get view by name
- */
- function get_view_byname($name) {
-     $view = db_select('variable', 'v')
-       ->fields('v', array('value'))
-       ->condition('name', $name)
-       ->execute()
-       ->fetchField();
-
-     return unserialize($view);
- }
-
 
 function _views_internal_tables() {
   if (module_exists('category')) {
