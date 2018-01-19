@@ -106,6 +106,7 @@
                   </select>
                 </td>
                 <td class="bsChrome">
+                  <input type="checkbox" v-model="new_filter_value_from_url">使用Url动态参数<br /><br />
                   <input type="text" name="new_filter_value" v-model="new_filter_value" class="input" v-if="select_field_filter_type != 'yes-no'">
                   <div v-else>
                     <input type="radio" name="new_filter_value" value="1" v-model="new_filter_value" checked="checked" class="form-radio">Yes
@@ -257,6 +258,7 @@
       </div>
     </form>
     <div class="side-right">
+      <div class="context-filter">动态参数：<input type="text" v-model="context_filter_value"></div>
       <button class="btn" @click="previewResult" :disabled="canPreview">预览</button>
       <div class="preview-result">
         <pre v-if="json_export" v-html="preview_result"></pre>

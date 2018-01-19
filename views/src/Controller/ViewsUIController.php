@@ -113,7 +113,9 @@ public function views_settings(ServerRequest $request) {
    *   Return views_view_delete string.
    */
   public function views_view_delete($view) {
-    return 'Implement method: views_view_delete with parameter(s): '.$view;
+    $view_machine_name = 'views_view_final_'.$view;
+    variable_del($view_machine_name);
+    return true;
   }
 
   /**
@@ -254,7 +256,7 @@ public function views_settings(ServerRequest $request) {
    */
   public function api_get_query_result(ServerRequest $request, GenericBuilder $builder) {
     if($parms = $request->getParsedBody()){
-      $result = views_get_view($parms['view_machine_name'], true);
+      $result = views_get_view($parms, true);
 
       if($result == false){
         return new JsonResponse('Empty Content !');
@@ -507,6 +509,7 @@ public function views_settings(ServerRequest $request) {
          foreach ($view['view_query_values'] as $key => $value) {
            if(strpos($value,':::') !== false){
              $v = explode(':::', $value);
+             $v[0] = substr($v[0], strripos($v[0], '.')+1);
              $view['view_query_values'][$key] = $vars[$v[0]];
            }
          }

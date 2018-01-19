@@ -39,7 +39,7 @@
         <td>
           <a class="layui-btn layui-btn-xs" href="admin/views/view/{{ $v['view_name'] }}/export">导出</a>
           <a class="layui-btn layui-btn-xs" onclick="editView('{{ $v['view_name'] }}')">编辑</a>
-          <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+          <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="delView('{{ $v['view_name'] }}')">删除</a>
         </td>
       </tr>
       @endforeach
@@ -85,6 +85,38 @@
       });
       layer.full(index);
     });
+  }
+
+  function delView(view) {
+      layui.use(['layer'], function() {
+          var $ = layui.jquery;
+          var layer = layui.layer;
+
+          layer.confirm('你确定要删除此项吗?', {
+              icon: 3,
+              title: '删除View'
+          }, function(index) {
+              $.ajax({
+                  type: "GET",
+                  url: "admin/views/view/"+view+'/delete',
+                  success: function(msg) {
+                      if (msg) { //如果成功了
+                          layer.msg('删除成功!', {
+                              icon: 1,
+                              time: 1000,
+                              shade: 0.1
+                          }, function() {
+                              location.reload();
+                          });
+                      } else {
+                          layer.msg('删除失败!', {
+                              icon: 5
+                          });
+                      }
+                  }
+              });
+          });
+      });
   }
 
   function setView(view) {

@@ -39,6 +39,7 @@ var App = new Vue({
     new_filter_field: '',
     new_filter_op: 'equals',
     new_filter_value: '',
+    new_filter_value_from_url: false,
     new_sort_field: '',
     new_sort_value: 'asc',
     new_sort_date: 'second',
@@ -51,12 +52,8 @@ var App = new Vue({
     edit_machine_name: false,
     json_export: false,
     need_permission: false,
-    permissions: []
-  },
-  watch: {
-    view_name: function (newName) {
-      this.getMachineName()
-    }
+    permissions: [],
+    context_filter_value: ''
   },
   mounted: function () {
     this.initViewsSetting();
@@ -67,6 +64,19 @@ var App = new Vue({
   computed: {
     canPreview: function () {
       return (!this.json_export || this.view_fields.length == 0) && this.template_content == '';
+    }
+  },
+  watch: {
+    view_name: function (newName) {
+      this.getMachineName()
+    },
+    new_filter_value_from_url: function (newValue) {
+     var vm = this;
+     if(newValue){
+       this.setFilterValue(vm.new_filter_field+':::fromUrl')
+     }else {
+       this.setFilterValue('')
+     }
     }
   },
   methods: {
@@ -133,6 +143,10 @@ var App = new Vue({
     editMachineName: function(){
       var vm = this;
       vm.edit_machine_name = !vm.edit_machine_name;
+    },
+    setFilterValue: function(value) {
+      var vm = this;
+      vm.new_filter_value = value;
     },
     addNewFilter: function(e) {
       e.preventDefault();
@@ -254,7 +268,8 @@ var App = new Vue({
     getPreviewResult: function() {
       var vm = this;
       vm.$http.post('admin/api/query-result', {
-        'view_machine_name': vm.view_machine_name
+        'view_machine_name': vm.view_machine_name,
+        'context_filter_value': vm.context_filter_value
       }).then(function (response) {
         if (response.body.length == false) {
           layer.alert('preview error！', {icon: 5});
