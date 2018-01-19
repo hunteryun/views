@@ -13,6 +13,8 @@
   <script src="theme/admin/assets/js/vue-resource.js"></script>
   <script src="theme/admin/assets/js/lodash.min.js"></script>
   <script src="theme/admin/assets/js/jquery.dropdown.js"></script>
+  <script src="theme/admin/assets/js/sortable.min.js"></script>
+  <script src="theme/admin/assets/js/vuedraggable.min.js"></script>
   {!! phptojs()->put(['base_path' => base_path()])->getJsVars(); !!}
 </head>
 <body>
@@ -78,9 +80,13 @@
         <label class="form-label">过滤</label>
         <div class="view_filters_list" v-if="view_filters.length != 0">
           <ul>
-            <li v-for="(filter, key) in view_filters" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }"><span @click="editFilter(filter)">@{{ filter.field }} (@{{ filter.lable +' '+ filter.value }})</span>
-              <button class="btn" @click="removeFilter(filter, $event)">Remove</button>
-              <button class="btn" @click="editFilter(filter, $event)">Edit</button></li>
+            <draggable v-model="view_filters" :options="{group:'views_filter_list'}">
+              <li v-for="(filter, key) in view_filters" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }" :key="key">
+                <span @click="editFilter(filter)">@{{ filter.field }} (@{{ filter.lable +' '+ filter.value }})</span>
+                <button class="btn" @click="removeFilter(filter, $event)">Remove</button>
+                <button class="btn" @click="editFilter(filter, $event)">Edit</button>
+              </li>
+            </draggable>
           </ul>
         </div>
         <div class="input-block" v-if="fields">

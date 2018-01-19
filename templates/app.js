@@ -77,7 +77,7 @@ var App = new Vue({
      }else {
        this.setFilterValue('')
      }
-    }
+   }
   },
   methods: {
     initViewsSetting: function() {
@@ -161,8 +161,8 @@ var App = new Vue({
         op: vm.new_filter_op,
         value: vm.new_filter_value.trim(),
         lable: vm.filter_ops[vm.new_filter_op].lable,
-      })
-  	},
+      });
+    },
     editFilter: function (filter, e) {
       e.preventDefault();
       var vm = this;
