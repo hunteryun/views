@@ -27,7 +27,7 @@
         <label class="form-label">名称</label>
         <div class="input-inline-block">
           <input type="text" name="view_name" v-model="view_name">
-          <span class="machine_name" v-show="view_name != '' && !edit_machine_name">机器名: @{{ view_machine_name }} [<a href="#" @click.prevent="editMachineName">编辑</a>]</span>
+          <span class="machine_name" v-show="view_name != '' && !edit_machine_name">机器名: @{{ view_machine_name }} [<a href="#" @click.prevent.prevent="editMachineName">编辑</a>]</span>
         </div>
       </div>
 
@@ -82,9 +82,9 @@
           <ul>
             <draggable v-model="view_filters" :options="{group:'views_filter_list'}">
               <li v-for="(filter, key) in view_filters" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }" :key="key">
-                <span @click="editFilter(filter)">@{{ filter.field }} (@{{ filter.lable +' '+ filter.value }})</span>
-                <button class="btn" @click="removeFilter(filter, $event)">Remove</button>
-                <button class="btn" @click="editFilter(filter, $event)">Edit</button>
+                <span @click.prevent="editFilter(filter)">@{{ filter.field }} (@{{ filter.exposed ? 'exposed' : filter.lable +' '+ filter.value }})</span>
+                <button class="btn" @click.prevent="removeFilter(filter)">Remove</button>
+                <button class="btn" @click.prevent="editFilter(filter)">Edit</button>
               </li>
             </draggable>
           </ul>
@@ -112,7 +112,6 @@
                   </select>
                 </td>
                 <td class="bsChrome">
-                  <input type="checkbox" v-model="new_filter_value_from_url">使用Url动态参数<br /><br />
                   <input type="text" name="new_filter_value" v-model="new_filter_value" class="input" v-if="select_field_filter_type != 'yes-no'">
                   <div v-else>
                     <input type="radio" name="new_filter_value" value="1" v-model="new_filter_value" checked="checked" class="form-radio">Yes
@@ -120,10 +119,35 @@
                   </div>
                 </td>
                 <td class="bsChrome">
-                  <button class="btn btn-primary btn-mini" @click="addNewFilter" v-if="!edit_filter_mode">添加</button>
-                  <button class="btn btn-primary btn-mini" v-if="!edit_filter_mode">暴露</button>
-                  <button class="btn btn-primary btn-mini" @click="doneEditFilter" v-if="edit_filter_mode">修改</button>
-                  <button class="btn btn-primary btn-mini" @click="cancelEditFilter" v-if="edit_filter_mode">取消</button>
+                  <button class="btn btn-primary btn-mini" @click.prevent="addNewFilter(new_filter_exposed_setting)" v-if="!edit_filter_mode">添加</button>
+                  <button class="btn btn-primary btn-mini" @click.prevent="doneEditFilter(new_filter_exposed_setting)" v-if="edit_filter_mode">修改</button>
+                  <button class="btn btn-primary btn-mini" @click.prevent="cancelEditFilter" v-if="edit_filter_mode">取消</button>
+                </td>
+              </tr>
+              <tr>
+                <td class="bsIE" colspan="4">
+                  <input type="checkbox" v-model="new_filter_value_from_url">使用Url动态参数<br /><br />
+                  <input type="checkbox" v-model="new_filter_exposed_setting">暴露此字段<br /><br />
+                  <div class="exposed_setting" v-if="new_filter_exposed_setting">
+                    <div class="form-item">
+                      <label class="form-label">标签</label>
+                      <div class="input-inline-block">
+                        <input type="text" name="filter_exposed_lable" v-model="new_filter_exposed_lable">
+                      </div>
+                    </div>
+                    <div class="form-item">
+                      <label class="form-label">描述</label>
+                      <div class="input-inline-block">
+                        <input type="text" name="filter_exposed_description" v-model="new_filter_exposed_description">
+                      </div>
+                    </div>
+                    <div class="form-item">
+                      <label class="form-label">标识符</label>
+                      <div class="input-inline-block">
+                        <input type="text" name="filter_exposed_identifier" v-model="new_filter_exposed_identifier">
+                      </div>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -135,10 +159,13 @@
         <label class="form-label">排序</label>
         <div class="view_sort_list" v-if="view_sorts.length != 0">
           <ul>
-            <li v-for="(sort, key) in view_sorts" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }"><span @click="editSort(sort)">@{{ sort.field }} (@{{ sort.value }})</span>
-              <button class="btn" @click="removeSort(sort, $event)">Remove</button>
-              <button class="btn" @click="editSort(sort, $event)">Edit</button>
-            </li>
+            <draggable v-model="view_sorts" :options="{group:'view_sort_list'}">
+              <li v-for="(sort, key) in view_sorts" :class="{'even': key % 2 === 0, 'odd': key % 2 !== 0 }" :key="key">
+                <span @click.prevent="editSort(sort)">@{{ sort.field }} (@{{ sort.exposed ? 'exposed' : sort.value }})</span>
+                <button class="btn" @click.prevent="removeSort(sort)">Remove</button>
+                <button class="btn" @click.prevent="editSort(sort)">Edit</button>
+              </li>
+            </draggable>
           </ul>
         </div>
         <div class="input-block" v-if="fields">
@@ -173,9 +200,22 @@
                   </div>
                 </td>
                 <td class="bsChrome">
-                  <button class="btn btn-primary btn-mini" @click="addNewSort" v-if="!edit_sort_mode">添加</button>
-                  <button class="btn btn-primary btn-mini" @click="doneEditSort" v-if="edit_sort_mode">修改</button>
-                  <button class="btn btn-primary btn-mini" @click="cancelEditSort" v-if="edit_sort_mode">取消</button>
+                  <button class="btn btn-primary btn-mini" @click.prevent="addNewSort(new_sort_exposed_setting)" v-if="!edit_sort_mode">添加</button>
+                  <button class="btn btn-primary btn-mini" @click.prevent="doneEditSort(new_sort_exposed_setting)" v-if="edit_sort_mode">修改</button>
+                  <button class="btn btn-primary btn-mini" @click.prevent="cancelEditSort" v-if="edit_sort_mode">取消</button>
+                </td>
+              </tr>
+              <tr>
+                <td class="bsIE" colspan="4">
+                  <input type="checkbox" v-model="new_sort_exposed_setting">暴露此字段<br /><br />
+                  <div class="exposed_setting" v-if="new_sort_exposed_setting">
+                    <div class="form-item">
+                      <label class="form-label">标签</label>
+                      <div class="input-inline-block">
+                        <input type="text" name="sort_exposed_lable" v-model="new_sort_exposed_lable">
+                      </div>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -220,10 +260,10 @@
       <div v-if="!json_export">
         <div class="form-item" pane="">
           <div><label class="form-label">格式化</label></div>
-          <button class="btn btn-primary btn-mini" @click="setTextarea('htmllist', $event)">Html List</button>
-          <button class="btn btn-primary btn-mini" @click="setTextarea('table', $event)">Table</button>
-          <button class="btn btn-primary btn-mini" @click="setTextarea('none', $event)">Unformatted list</button>
-          <button class="btn btn-primary btn-mini" @click="setTextarea('html5', $event)">HTML5</button>
+          <button class="btn btn-primary btn-mini" @click.prevent="setTextarea('htmllist')">Html List</button>
+          <button class="btn btn-primary btn-mini" @click.prevent="setTextarea('table')">Table</button>
+          <button class="btn btn-primary btn-mini" @click.prevent="setTextarea('none')">Unformatted list</button>
+          <button class="btn btn-primary btn-mini" @click.prevent="setTextarea('html5')">HTML5</button>
         </div>
 
         <div class="form-item" pane="">
@@ -239,8 +279,8 @@
             <option value="">请选择模板</option>
             <option v-for="(template, index) in templates" :value="template">@{{ index }}</option>
           </select>
-          <button class="btn btn-primary btn-mini" @click="cleanLoadTemplates">刷新模板缓存</button>
-          <button class="btn btn-primary btn-mini" @click="editThisTemplate">编辑该模板</button>
+          <button class="btn btn-primary btn-mini" @click.prevent="cleanLoadTemplates">刷新模板缓存</button>
+          <button class="btn btn-primary btn-mini" @click.prevent="editThisTemplate">编辑该模板</button>
         </div>
 
         <div class="form-item form-text" v-if="show_editor">
@@ -258,14 +298,14 @@
 
       <div class="form-item">
         <div class="input-block">
-          <button class="btn" @click="saveView('final', $event)">保存</button>
+          <button class="btn" @click.prevent="saveView('final')">保存</button>
           <button type="reset">重置</button>
         </div>
       </div>
     </form>
     <div class="side-right">
       <div class="context-filter">动态参数：<input type="text" v-model="context_filter_value"></div>
-      <button class="btn" @click="previewResult" :disabled="canPreview">预览</button>
+      <button class="btn" @click.prevent="previewResult" :disabled="canPreview">预览</button>
       <div class="preview-result">
         <pre v-if="json_export" v-html="preview_result"></pre>
         <div v-html="preview_result" v-else></div>

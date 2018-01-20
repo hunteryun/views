@@ -40,9 +40,15 @@ var App = new Vue({
     new_filter_op: 'equals',
     new_filter_value: '',
     new_filter_value_from_url: false,
+    new_filter_exposed_setting: false,
+    new_filter_exposed_lable: '',
+    new_filter_exposed_description: '',
+    new_filter_exposed_identifier: '',
     new_sort_field: '',
     new_sort_value: 'asc',
     new_sort_date: 'second',
+    new_sort_exposed_setting: false,
+    new_sort_exposed_lable: '',
     select_field_filter_type: '',
     select_field_sort_type: '',
     editedFilter: null,
@@ -148,106 +154,139 @@ var App = new Vue({
       var vm = this;
       vm.new_filter_value = value;
     },
-    addNewFilter: function(e) {
-      e.preventDefault();
+    addNewFilter: function(exposed) {
       var vm = this;
-      var value = vm.new_filter_value && vm.new_filter_value.trim();
-      if (vm.new_filter_field == '' || vm.new_filter_op == '' || !value) {
-        layer.alert('Please select the filter field！', {icon: 5});
-        return;
+      if(!exposed){
+        var value = vm.new_filter_value && vm.new_filter_value.trim();
+        if (vm.new_filter_field == '' || vm.new_filter_op == '' || !value) {
+          layer.alert('Please select the filter field！', {icon: 5});
+          return;
+        }
       }
       vm.view_filters.push({
         field: vm.new_filter_field,
         op: vm.new_filter_op,
         value: vm.new_filter_value.trim(),
         lable: vm.filter_ops[vm.new_filter_op].lable,
+        exposed: exposed ? exposed : false,
+        exposed_setting: {
+          lable: vm.new_filter_exposed_lable,
+          description: vm.new_filter_exposed_description,
+          identifier: vm.new_filter_exposed_identifier
+        }
       });
+      vm.new_filter_value_from_url = false;
+      vm.new_filter_exposed_setting = false;
     },
-    editFilter: function (filter, e) {
-      e.preventDefault();
+    editFilter: function (filter) {
       var vm = this;
       vm.new_filter_field = filter.field;
       vm.new_filter_op = filter.op;
       vm.new_filter_value = filter.value;
+      vm.new_filter_exposed_setting = filter.exposed;
+      vm.new_filter_exposed_lable = filter.exposed_setting.lable;
+      vm.new_filter_exposed_description = filter.exposed_setting.description;
+      vm.new_filter_exposed_identifier = filter.exposed_setting.identifier;
       vm.editedFilter = filter;
       vm.edit_filter_mode = true;
     },
-    doneEditFilter: function (e) {
-      e.preventDefault();
+    doneEditFilter: function (exposed) {
       var vm = this;
-      var value = vm.new_filter_value && vm.new_filter_value.trim();
-      if (!value) {
-        layer.alert('Please set the filter value', {icon: 5});
-        return;
+      if(!exposed){
+        var value = vm.new_filter_value && vm.new_filter_value.trim();
+        if (!value) {
+          layer.alert('Please set the filter value', {icon: 5});
+          return;
+        }
       }
       vm.view_filters.splice(vm.view_filters.indexOf(vm.editedFilter), 1, {
         field: vm.new_filter_field,
         op: vm.new_filter_op,
         value: vm.new_filter_value.trim(),
-        lable: vm.filter_ops[vm.new_filter_op].lable
+        lable: vm.filter_ops[vm.new_filter_op].lable,
+        exposed: exposed ? exposed : false,
+        exposed_setting: {
+          lable: vm.new_filter_exposed_lable,
+          description: vm.new_filter_exposed_description,
+          identifier: vm.new_filter_exposed_identifier
+        }
       });
       vm.edit_filter_mode = false;
+      vm.new_filter_value_from_url = false;
+      vm.new_filter_exposed_setting = false;
     },
-    cancelEditFilter: function (e) {
-      e.preventDefault();
+    cancelEditFilter: function () {
       var vm = this;
       vm.new_filter_field = '';
       vm.new_filter_op = '';
       vm.new_filter_value = '';
+      vm.new_filter_exposed_setting = false;
+      vm.new_filter_exposed_lable = '';
+      vm.new_filter_exposed_description = '';
+      vm.new_filter_exposed_identifier = '';
       vm.edit_filter_mode = false;
     },
-    removeFilter: function (filter, e) {
-      e.preventDefault();
+    removeFilter: function (filter) {
       var vm = this;
       vm.view_filters.splice(vm.view_filters.indexOf(filter), 1);
     },
-    addNewSort: function(e) {
-      e.preventDefault();
+    addNewSort: function(exposed) {
       var vm = this;
-      if (vm.new_sort_field == '' || vm.new_sort_value == '') {
-        layer.alert('Please select the sort field！', {icon: 5});
-        return;
+      if(!exposed){
+        if (vm.new_sort_field == '' || vm.new_sort_value == '') {
+          layer.alert('Please select the sort field！', {icon: 5});
+          return;
+        }
       }
       vm.view_sorts.push({
         field: vm.new_sort_field,
         value: vm.new_sort_value,
         date: vm.select_field_sort_type ? vm.new_sort_date : '',
-      })
+        exposed: exposed ? exposed : false,
+        exposed_setting: {
+          lable: vm.new_sort_exposed_lable
+        }
+      });
+      vm.new_sort_exposed_setting = false;
     },
-    editSort: function (sort, e) {
-      e.preventDefault();
+    editSort: function (sort) {
       var vm = this;
       vm.new_sort_field = sort.field;
       vm.new_sort_value = sort.value;
       vm.new_sort_date = sort.date;
+      vm.new_sort_exposed_setting = sort.exposed;
+      vm.new_sort_exposed_lable = sort.exposed_setting.lable;
       vm.editedSort = sort;
       vm.edit_sort_mode = true;
     },
-    doneEditSort: function (e) {
-      e.preventDefault();
+    doneEditSort: function (exposed) {
       var vm = this;
       vm.view_sorts.splice(vm.view_sorts.indexOf(vm.editedSort), 1, {
         field: vm.new_sort_field,
         value: vm.new_sort_value,
         date: vm.select_field_sort_type ? vm.new_sort_date : '',
+        exposed: exposed ? exposed : false,
+        exposed_setting: {
+          lable: vm.new_sort_exposed_lable
+        }
       });
       vm.edit_sort_mode = false;
+      vm.new_sort_exposed_setting = false;
     },
-    cancelEditSort: function (e) {
-      e.preventDefault();
+    cancelEditSort: function () {
       var vm = this;
       vm.new_sort_field = '';
       vm.new_sort_value = '';
       vm.new_sort_date = '';
+      vm.new_sort_exposed_setting = false;
+      vm.new_sort_exposed_lable = '';
       vm.edit_sort_mode = false;
     },
-    removeSort: function (sort, e) {
-      e.preventDefault();
+    removeSort: function (sort) {
       var vm = this;
       vm.view_sorts.splice(vm.view_sorts.indexOf(sort), 1);
     },
-    cleanLoadTemplates: function(e) {
-      e.preventDefault();
+    cleanLoadTemplates: function() {
       var vm = this;
       vm.$http.post('admin/api/templates', {'rescan': true}).then(function (response) {
         if (response.body.length == 0) {
@@ -260,10 +299,9 @@ var App = new Vue({
         layer.alert('init error！', {icon: 5});
       });
   	},
-    previewResult: function(e) {
-      e.preventDefault();
+    previewResult: function() {
       var vm = this;
-      vm.saveView('temp', e);
+      vm.saveView('temp');
     },
     getPreviewResult: function() {
       var vm = this;
@@ -280,8 +318,7 @@ var App = new Vue({
         layer.alert('preview error！', {icon: 5});
       });
     },
-    saveView: function(type, e) {
-      e.preventDefault();
+    saveView: function(type) {
       var vm = this;
       if(vm.need_permission){
         vm.view_permissions = $(".dropdown-permission-list select").val();
@@ -338,6 +375,8 @@ var App = new Vue({
       var select_filed = vm.new_filter_field.split(".")[1];
       vm.select_field_filter_type = vm.tables[select_table].fields[select_filed].filter_type;
       vm.filter_ops = vm.filters_list[vm.select_field_filter_type];
+      vm.new_filter_exposed_lable = vm.fields[vm.new_filter_field].name;
+      vm.new_filter_exposed_identifier = vm.new_filter_field.replace(".","_");
     },
     updateSortType: function() {
       var vm = this;
@@ -348,6 +387,7 @@ var App = new Vue({
       }else {
         vm.select_field_sort_type = '';
       }
+      vm.new_sort_exposed_lable = vm.fields[vm.new_sort_field].name;
     },
     addRelationshipFields: function() {
       var vm = this;
@@ -355,8 +395,7 @@ var App = new Vue({
         vm.fields[vm.view_relation_table+'.'+n] = vm.tables[vm.view_relation_table].fields[n];
       }
   	},
-    editThisTemplate: function(e) {
-      e.preventDefault();
+    editThisTemplate: function() {
       var vm = this;
       vm.$http.post('admin/api/get-template-content', {'file_name': vm.view_template}).then(function (response) {
           if (response.body.length == 0) {
@@ -384,8 +423,7 @@ var App = new Vue({
         });
       }
   	},
-    setTextarea: function(type, e) {
-      e.preventDefault();
+    setTextarea: function(type) {
       var vm = this;
       var htmltext = '';
       switch(type)
