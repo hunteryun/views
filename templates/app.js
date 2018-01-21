@@ -426,6 +426,7 @@ var App = new Vue({
     setTextarea: function(type) {
       var vm = this;
       var htmltext = '';
+      var topformtext = '';
       var filtertext = '';
       var sorttext = '';
 
@@ -447,7 +448,7 @@ var App = new Vue({
         for (var k = 0, length = vm.view_sorts.length; k < length; k++) {
           if(vm.view_sorts[k].exposed){
             var field_name = vm.view_sorts[k].field.substr(vm.view_sorts[k].field.indexOf(".")+1);
-            sorttext += '   <option value="'+field_name+'" {{ $parms[\'sort_by\'] == \''+field_name+'\' ? "selected" : "" }}>'+vm.view_sorts[k].exposed_setting.lable+'</option>\n';
+            sorttext += '   <option value="'+field_name+'" {{ isset($parms[\'sort_by\']) && $parms[\'sort_by\'] == \''+field_name+'\' ? "selected" : "" }}>'+vm.view_sorts[k].exposed_setting.lable+'</option>\n';
           }
         }
         sorttext += '   </select>\n';
@@ -455,23 +456,24 @@ var App = new Vue({
         sorttext += '  <div class="form-group">\n';
         sorttext += '   <label class="form-label">{{ t("Order") }}：</label>\n';
         sorttext += '   <select name="sort_order" class="form-control">\n';
-        sorttext += '    <option value="ASC" {{ strtolower($parms[\'sort_order\']) == \'asc\' ? "selected" : "" }}>Asc</option>\n';
-        sorttext += '    <option value="DESC" {{ strtolower($parms[\'sort_order\']) == \'desc\' ? "selected" : "" }}>Desc</option>\n';
+        sorttext += '    <option value="ASC" {{ isset($parms[\'sort_order\']) && strtolower($parms[\'sort_order\']) == \'asc\' ? "selected" : "" }}>Asc</option>\n';
+        sorttext += '    <option value="DESC" {{ isset($parms[\'sort_order\']) && strtolower($parms[\'sort_order\']) == \'desc\' ? "selected" : "" }}>Desc</option>\n';
         sorttext += '   </select>\n';
         sorttext += '  </div>\n';
       }
 
       if(filtertext != '' || sorttext != ''){
-        htmltext += '<div class="views_expose_form">\n <form action="'+vm.view_path+'">\n';
-        htmltext += filtertext;
-        htmltext += sorttext;
-        htmltext += '  <button type="submit" class="btn btn-primary">{{ t("Filter") }}</button>';
-        htmltext += ' </form>\n</div>\n';
+        topformtext += '<div class="views_expose_form">\n <form action="'+vm.view_path+'">\n';
+        topformtext += filtertext;
+        topformtext += sorttext;
+        topformtext += '  <button type="submit" class="btn btn-primary">{{ t("Filter") }}</button>';
+        topformtext += ' </form>\n</div>\n';
       }
 
       switch(type)
       {
       case 'htmllist':
+        htmltext += topformtext;
         htmltext += '<div class="item-list">\n <ul>\n';
         htmltext += '  @foreach($viewdata as $item)\n  <li>\n';
         if(vm.view_fields != []){
@@ -483,6 +485,7 @@ var App = new Vue({
         htmltext += ' </ul>\n</div>\n';
         break;
       case 'table':
+        htmltext += topformtext;
         htmltext += '<table class="table">\n <thead>\n  <tr>\n';
         if(vm.view_fields != []){
           for (var i=0; i<vm.view_fields.length; i++){
@@ -503,6 +506,7 @@ var App = new Vue({
         htmltext += '<!DOCTYPE html>\n<html lang="en">\n<head>\n';
         htmltext += '  <meta charset="UTF-8">\n  <title>'+vm.view_name+'</title>\n';
         htmltext += '</head>\n<body>\n';
+        htmltext += topformtext;
         if(vm.view_fields != []){
           htmltext += '  @foreach($viewdata as $item)\n';
           for (var i=0; i<vm.view_fields.length; i++){
@@ -510,10 +514,10 @@ var App = new Vue({
           }
           htmltext += '  @endforeach\n';
         }
-        htmltext += '</body>\n</html>\n';
         break;
       default:
         if(vm.view_fields != []){
+          htmltext += topformtext;
           htmltext += '@foreach($viewdata as $item)\n';
           for (var i=0; i<vm.view_fields.length; i++){
             htmltext += '{{ $item->'+vm.view_fields[i].split(".")[1]+' }}\n';
@@ -523,6 +527,9 @@ var App = new Vue({
       }
       if(vm.has_pager && (vm.view_pager.type == 'mini' || vm.view_pager.type == 'full')){
         htmltext += '{!! hunter_pager($pager) !!}\n';
+      }
+      if(type == 'html5'){
+        htmltext += '</body>\n</html>\n';
       }
       vm.template_content = htmltext;
     },
