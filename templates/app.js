@@ -434,7 +434,7 @@ var App = new Vue({
           if(vm.view_filters[k].exposed){
             filtertext += '  <div class="form-item">\n';
             filtertext += '   <label class="form-label">'+vm.view_filters[k].exposed_setting.lable+'：</label>\n';
-            filtertext += '   <input type="text" name="'+vm.view_filters[k].exposed_setting.identifier+'" class="filter-input" value="">'+vm.view_filters[k].exposed_setting.description+'\n';
+            filtertext += '   <input type="text" name="'+vm.view_filters[k].exposed_setting.identifier+'" class="filter-input" value="{{ isset($parms[\''+vm.view_filters[k].exposed_setting.identifier+'\']) ? $parms[\''+vm.view_filters[k].exposed_setting.identifier+'\'] : "" }}">'+vm.view_filters[k].exposed_setting.description+'\n';
             filtertext += '  </div>\n';
           }
         }
@@ -446,7 +446,8 @@ var App = new Vue({
         sorttext += '   <select name="sort_by">\n';
         for (var k = 0, length = vm.view_sorts.length; k < length; k++) {
           if(vm.view_sorts[k].exposed){
-            sorttext += '   <option value="'+vm.view_sorts[k].field.substr(vm.view_sorts[k].field.indexOf(".")+1)+'">'+vm.view_sorts[k].exposed_setting.lable+'</option>\n';
+            var field_name = vm.view_sorts[k].field.substr(vm.view_sorts[k].field.indexOf(".")+1);
+            sorttext += '   <option value="'+field_name+'" {{ $parms[\'sort_by\'] == \''+field_name+'\' ? "selected" : "" }}>'+vm.view_sorts[k].exposed_setting.lable+'</option>\n';
           }
         }
         sorttext += '   </select>\n';
@@ -454,8 +455,8 @@ var App = new Vue({
         sorttext += '  <div class="form-item">\n';
         sorttext += '   <label class="form-label">{{ t("Order") }}：</label>\n';
         sorttext += '   <select name="sort_order">\n';
-        sorttext += '    <option value="ASC">Asc</option>\n';
-        sorttext += '    <option value="DESC">Desc</option>\n';
+        sorttext += '    <option value="ASC" {{ strtolower($parms[\'sort_order\']) == \'asc\' ? "selected" : "" }}>Asc</option>\n';
+        sorttext += '    <option value="DESC" {{ strtolower($parms[\'sort_order\']) == \'desc\' ? "selected" : "" }}>Desc</option>\n';
         sorttext += '   </select>\n';
         sorttext += '  </div>\n';
       }

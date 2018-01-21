@@ -375,7 +375,7 @@ public function views_settings(ServerRequest $request) {
    * build views query.
    */
    public function build_views_query(&$view, $vars = array(), $from_exposed = false) {
-     if($view['json_export'] == 'false'){
+     if($view['json_export'] == 'false' && !$from_exposed){
        if(!empty($view['view_template'])){
          if(!empty($view['template_content']) && $view['overwrit_template'] == 'true' && $view['type'] == 'final'){
            if (!is_dir(dirname($view['view_template']))){
@@ -567,7 +567,7 @@ public function views_settings(ServerRequest $request) {
          $result = db_query($view['view_query'], $view['view_query_values'])->fetchAll();
          if(!empty($result)) {
            if($view['json_export'] == 'false'){
-             $output = theme()->render($view['view_template'], array('viewdata' => $result));
+             $output = theme()->render($view['view_template'], array('viewdata' => $result, 'parms' => $parms));
              return $output;
            }else{
              return new JsonResponse($result);

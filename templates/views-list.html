@@ -34,8 +34,8 @@
       <tr>
         <td>{{ $v['view_name'] }}</td>
         <td>{{ $v['view_description'] }}</td>
-        <td>{{ $v['json_export'] ? 'API' : 'Page' }}</td>
-        <td>{{ $v['view_path'] }}</td>
+        <td>{{ $v['json_export'] == 'true' ? 'API' : 'Page' }}</td>
+        <td><a href="{{ $v['view_path'] }}" target="_blank">{{ $v['view_path'] }}</a></td>
         <td>
           <a class="layui-btn layui-btn-xs" href="admin/views/view/{{ $v['view_name'] }}/export">导出</a>
           <a class="layui-btn layui-btn-xs" onclick="editView('{{ $v['view_name'] }}')">编辑</a>
