@@ -432,7 +432,7 @@ var App = new Vue({
       if(vm.view_filters.length != 0){
         for (var k = 0, length = vm.view_filters.length; k < length; k++) {
           if(vm.view_filters[k].exposed){
-            filtertext += '  <div class="form-item">\n';
+            filtertext += '  <div class="form-group">\n';
             filtertext += '   <label class="form-label">'+vm.view_filters[k].exposed_setting.lable+'：</label>\n';
             filtertext += '   <input type="text" name="'+vm.view_filters[k].exposed_setting.identifier+'" class="filter-input" value="{{ isset($parms[\''+vm.view_filters[k].exposed_setting.identifier+'\']) ? $parms[\''+vm.view_filters[k].exposed_setting.identifier+'\'] : "" }}">'+vm.view_filters[k].exposed_setting.description+'\n';
             filtertext += '  </div>\n';
@@ -441,9 +441,9 @@ var App = new Vue({
       }
 
       if(vm.view_sorts.length != 0){
-        sorttext += '  <div class="form-item">\n';
+        sorttext += '  <div class="form-group">\n';
         sorttext += '   <label class="form-label">{{ t("Sort By") }}：</label>\n';
-        sorttext += '   <select name="sort_by">\n';
+        sorttext += '   <select name="sort_by" class="form-control">\n';
         for (var k = 0, length = vm.view_sorts.length; k < length; k++) {
           if(vm.view_sorts[k].exposed){
             var field_name = vm.view_sorts[k].field.substr(vm.view_sorts[k].field.indexOf(".")+1);
@@ -452,9 +452,9 @@ var App = new Vue({
         }
         sorttext += '   </select>\n';
         sorttext += '  </div>\n';
-        sorttext += '  <div class="form-item">\n';
+        sorttext += '  <div class="form-group">\n';
         sorttext += '   <label class="form-label">{{ t("Order") }}：</label>\n';
-        sorttext += '   <select name="sort_order">\n';
+        sorttext += '   <select name="sort_order" class="form-control">\n';
         sorttext += '    <option value="ASC" {{ strtolower($parms[\'sort_order\']) == \'asc\' ? "selected" : "" }}>Asc</option>\n';
         sorttext += '    <option value="DESC" {{ strtolower($parms[\'sort_order\']) == \'desc\' ? "selected" : "" }}>Desc</option>\n';
         sorttext += '   </select>\n';
@@ -465,7 +465,7 @@ var App = new Vue({
         htmltext += '<div class="views_expose_form">\n <form action="'+vm.view_path+'">\n';
         htmltext += filtertext;
         htmltext += sorttext;
-        htmltext += '  <button type="submit">{{ t("Filter") }}</button>';
+        htmltext += '  <button type="submit" class="btn btn-primary">{{ t("Filter") }}</button>';
         htmltext += ' </form>\n</div>\n';
       }
 
@@ -483,7 +483,7 @@ var App = new Vue({
         htmltext += ' </ul>\n</div>\n';
         break;
       case 'table':
-        htmltext += '<table class="layui-table">\n <thead>\n  <tr>\n';
+        htmltext += '<table class="table">\n <thead>\n  <tr>\n';
         if(vm.view_fields != []){
           for (var i=0; i<vm.view_fields.length; i++){
             htmltext += '   <th>'+vm.fields[vm.view_fields[i]].name+'</th>\n';
