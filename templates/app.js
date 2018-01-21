@@ -426,6 +426,25 @@ var App = new Vue({
     setTextarea: function(type) {
       var vm = this;
       var htmltext = '';
+      var filtertext = '';
+
+      if(vm.view_filters.length != 0){
+        for (var k = 0, length = vm.view_filters.length; k < length; k++) {
+          if(vm.view_filters[k].exposed){
+            filtertext += '  <div class="form-item">\n';
+            filtertext += '   <input type="text" name="'+vm.view_filters[k].exposed_setting.identifier+'" placeholder="'+vm.view_filters[k].exposed_setting.lable+'" class="filter-input" value="">'+vm.view_filters[k].exposed_setting.description+'\n';
+            filtertext += '  </div>\n';
+          }
+        }
+      }
+
+      if(filtertext != ''){
+        htmltext += '<div class="views_expose_form">\n <form action="'+vm.view_path+'">\n';
+        htmltext += filtertext;
+        htmltext += '  <button type="submit">{{ t("过滤搜索") }}</button>';
+        htmltext += ' </form>\n</div>\n';
+      }
+
       switch(type)
       {
       case 'htmllist':

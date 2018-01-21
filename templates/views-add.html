@@ -307,9 +307,12 @@
       <div class="context-filter">动态参数：<input type="text" v-model="context_filter_value"></div>
       <button class="btn" @click.prevent="previewResult" :disabled="canPreview">预览</button>
       <div class="preview-result">
-        <pre v-if="json_export" v-html="preview_result"></pre>
-        <div v-html="preview_result" v-else></div>
-        <div class="show-query-sql"></div>
+        <h2>Preview</h2>
+        <div class="views-live-preview">          
+          <pre v-if="json_export" v-html="preview_result"></pre>
+          <div v-html="preview_result" v-else></div>
+          <div class="show-query-sql"></div>
+        </div>
       </div>
       <div class="preview-note">注：本预览只作为临时效果预览, 分页、样式等效果请在最终调用页面查看.</div>
     </div>

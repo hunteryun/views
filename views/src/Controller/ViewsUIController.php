@@ -15,6 +15,20 @@ use Hunter\Core\Serialization\Yaml;
  * @package Hunter\views\Controller
  */
 class ViewsUIController {
+
+  /**
+  * @var StringConverter
+  */
+ protected $string;
+
+  /**
+   * InstallCommand constructor.
+   */
+  public function __construct() {
+      $this->string = new StringConverter();
+      $this->builder = new GenericBuilder();
+  }
+
   /**
    * views_list.
    *
@@ -100,8 +114,7 @@ public function views_settings(ServerRequest $request) {
    */
   public function views_view_save($parms) {
     if($parms) {
-      $string = new StringConverter();
-      $view_machine_name = $string->createMachineName($parms['view_name']);
+      $view_machine_name = $this->string->createMachineName($parms['view_name']);
       variable_set('views_view_'.$parms['type'].'_'.$view_machine_name, $parms);
     }
   }
@@ -124,9 +137,9 @@ public function views_settings(ServerRequest $request) {
    * @return string
    *   Return api_get_tables string.
    */
-  public function api_get_machine_name(ServerRequest $request, StringConverter $string) {
+  public function api_get_machine_name(ServerRequest $request) {
     if($parms = $request->getParsedBody()){
-      $machine_name = $string->createMachineName($parms['name']);
+      $machine_name = $this->string->createMachineName($parms['name']);
       return new JsonResponse($machine_name);
     }
     return new JsonResponse(false);
@@ -273,126 +286,9 @@ public function views_settings(ServerRequest $request) {
    * @return string
    *   Return api_save_view string.
    */
-  public function api_save_view(ServerRequest $request, GenericBuilder $builder, StringConverter $string) {
+  public function api_save_view(ServerRequest $request) {
     if($parms = $request->getParsedBody()){
-      if($parms['json_export'] == 'false'){
-        if(!empty($parms['view_template'])){
-          if(!empty($parms['template_content']) && $parms['overwrit_template'] == 'true' && $parms['type'] == 'final'){
-            if (!is_dir(dirname($parms['view_template']))){
-              mkdir(dirname($parms['view_template']), 0755, true);
-            }
-
-            file_put_contents($parms['view_template'], $parms['template_content']);
-          }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
-            $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_machine_name'];
-            if (!is_dir(dirname($parms['view_template']))){
-              mkdir(dirname($parms['view_template']), 0755, true);
-            }
-
-            file_put_contents($parms['view_template'], $parms['template_content']);
-          }elseif (!empty($parms['template_content']) && $parms['type'] == 'final' && $parms['overwrit_template'] == 'false') {
-            $parms['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/'.basename($parms['view_template']);
-            if (!is_dir(dirname($parms['view_template']))){
-              mkdir(dirname($parms['view_template']), 0755, true);
-            }
-
-            file_put_contents($parms['view_template'], $parms['template_content']);
-          }
-        }else {
-          if(!empty($parms['template_content']) && $parms['type'] == 'final'){
-            $view_machine_name = $string->createMachineName($parms['view_machine_name']);
-            $parms['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/views-view-'.$view_machine_name.'.html';
-            if (!is_dir(dirname($parms['view_template']))){
-              mkdir(dirname($parms['view_template']), 0755, true);
-            }
-
-            file_put_contents($parms['view_template'], $parms['template_content']);
-          }elseif (!empty($parms['template_content']) && $parms['type'] == 'temp') {
-            $parms['view_template'] = 'sites/cache/views/views_view_cache_'.$parms['view_machine_name'];
-            if (!is_dir(dirname($parms['view_template']))){
-              mkdir(dirname($parms['view_template']), 0755, true);
-            }
-            file_put_contents($parms['view_template'], $parms['template_content']);
-          }
-        }
-      }
-
-      $tables = _views_get_tables();
-      $lfields = $rfields = array();
-
-      foreach ($parms['view_fields'] as $key => $field) {
-        if(substr($field,0,strrpos($field,'.')) == $parms['view_table']){
-          $lfields[] = str_replace($parms['view_table'].'.','',$field);
-        }else {
-          $rfields[] = str_replace($parms['view_relation_table'].'.','',$field);
-        }
-      }
-
-      if(!empty($parms['view_sorts'])){
-        foreach ($parms['view_sorts'] as $sort) {
-          if(substr($sort['field'],0,strrpos($sort['field'],'.')) == $parms['view_table']){
-            $sort['field'] = str_replace($parms['view_table'].'.','',$sort['field']);
-            $lsorts[] = $sort;
-          }else {
-            $sort['field'] = str_replace($parms['view_relation_table'].'.','',$sort['field']);
-            $rsorts[] = $sort;
-          }
-        }
-      }
-
-      $query = $builder->select()->setTable($parms['view_table']);
-      $query->setColumns($lfields);
-
-      if(!empty($lsorts)){
-        foreach ($lsorts as $lsort) {
-          if($lsort['value'] == 'desc'){
-            $query->orderBy($lsort['field'], OrderBy::DESC);
-          }else {
-            $query->orderBy($lsort['field'], OrderBy::ASC);
-          }
-        }
-      }
-
-      if($rfields){
-        $query->innerJoin(
-          $parms['view_relation_table'], //join table
-          'uid', //origin table field used to join
-          'uid', //join column
-           $rfields
-        );
-      }
-
-      if(!empty($parms['view_filters'])){
-        foreach ($parms['view_filters'] as $filter) {
-          $op = $filter['op'];
-          if(strpos($filter['value'],'-') !== false && ($filter['op'] == 'between' || $filter['op'] == 'notBetween')){
-            $v = explode('-', $filter['value']);
-            $query->where()
-            ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v[0], $v[1]);
-          }elseif($filter['op'] == 'in' || $filter['op'] == 'notIn') {
-            $v = explode(',', $filter['value']);
-            $query->where()
-            ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v);
-          }else {
-            $query->where()
-            ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
-          }
-        }
-      }
-
-      if(!empty($rsorts)){
-        foreach ($rsorts as $rsort) {
-          if($rsort['value'] == 'desc'){
-            $query->orderBy($rsort['field'], OrderBy::DESC, $parms['view_relation_table']);
-          }else {
-            $query->orderBy($rsort['field'], OrderBy::ASC, $parms['view_relation_table']);
-          }
-        }
-      }
-
-      $parms['view_query'] = $builder->write($query);
-      $parms['view_query_values'] = $builder->getValues();
-
+      $parms = $this->build_views_query($parms);
       if(is_string($parms['view_query'])){
         $this->views_view_save($parms);
       }
@@ -476,6 +372,139 @@ public function views_settings(ServerRequest $request) {
   }
 
   /**
+   * build views query.
+   */
+   public function build_views_query(&$view, $vars = array(), $from_exposed = false) {
+     if($view['json_export'] == 'false'){
+       if(!empty($view['view_template'])){
+         if(!empty($view['template_content']) && $view['overwrit_template'] == 'true' && $view['type'] == 'final'){
+           if (!is_dir(dirname($view['view_template']))){
+             mkdir(dirname($view['view_template']), 0755, true);
+           }
+
+           file_put_contents($view['view_template'], $view['template_content']);
+         }elseif (!empty($view['template_content']) && $view['type'] == 'temp') {
+           $view['view_template'] = 'sites/cache/views/views_view_cache_'.$view['view_machine_name'];
+           if (!is_dir(dirname($view['view_template']))){
+             mkdir(dirname($view['view_template']), 0755, true);
+           }
+
+           file_put_contents($view['view_template'], $view['template_content']);
+         }elseif (!empty($view['template_content']) && $view['type'] == 'final' && $view['overwrit_template'] == 'false') {
+           $view['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/'.basename($view['view_template']);
+           if (!is_dir(dirname($view['view_template']))){
+             mkdir(dirname($view['view_template']), 0755, true);
+           }
+
+           file_put_contents($view['view_template'], $view['template_content']);
+         }
+       }else {
+         if(!empty($view['template_content']) && $view['type'] == 'final'){
+           $view_machine_name = $this->string->createMachineName($view['view_machine_name']);
+           $view['view_template'] = 'theme/'. $GLOBALS['default_theme'].'/views/views-view-'.$view_machine_name.'.html';
+           if (!is_dir(dirname($view['view_template']))){
+             mkdir(dirname($view['view_template']), 0755, true);
+           }
+
+           file_put_contents($view['view_template'], $view['template_content']);
+         }elseif (!empty($view['template_content']) && $view['type'] == 'temp') {
+           $view['view_template'] = 'sites/cache/views/views_view_cache_'.$view['view_machine_name'];
+           if (!is_dir(dirname($view['view_template']))){
+             mkdir(dirname($view['view_template']), 0755, true);
+           }
+           file_put_contents($view['view_template'], $view['template_content']);
+         }
+       }
+     }
+
+     $tables = _views_get_tables();
+     $lfields = $rfields = array();
+
+     foreach ($view['view_fields'] as $key => $field) {
+       if(substr($field,0,strrpos($field,'.')) == $view['view_table']){
+         $lfields[] = str_replace($view['view_table'].'.','',$field);
+       }else {
+         $rfields[] = str_replace($view['view_relation_table'].'.','',$field);
+       }
+     }
+
+     if(!empty($view['view_sorts'])){
+       foreach ($view['view_sorts'] as $sort) {
+         if(substr($sort['field'],0,strrpos($sort['field'],'.')) == $view['view_table']){
+           $sort['field'] = str_replace($view['view_table'].'.','',$sort['field']);
+           $lsorts[] = $sort;
+         }else {
+           $sort['field'] = str_replace($view['view_relation_table'].'.','',$sort['field']);
+           $rsorts[] = $sort;
+         }
+       }
+     }
+
+     $query = $this->builder->select()->setTable($view['view_table']);
+     $query->setColumns($lfields);
+
+     if(!empty($lsorts)){
+       foreach ($lsorts as $lsort) {
+         if($lsort['exposed'] == 'false'){
+           if($lsort['value'] == 'desc'){
+             $query->orderBy($lsort['field'], OrderBy::DESC);
+           }else {
+             $query->orderBy($lsort['field'], OrderBy::ASC);
+           }
+         }
+       }
+     }
+
+     if($rfields){
+       $query->innerJoin(
+         $view['view_relation_table'], //join table
+         'uid', //origin table field used to join
+         'uid', //join column
+          $rfields
+       );
+     }
+
+     if(!empty($view['view_filters'])){
+       foreach ($view['view_filters'] as $filter) {
+         if($from_exposed){
+           if($filter['exposed'] == 'true' && isset($vars[$filter['exposed_setting']['identifier']])){
+             $filter['value'] = $vars[$filter['exposed_setting']['identifier']];
+           }
+           $op = $filter['op'];
+           if(strpos($filter['value'],'-') !== false && ($filter['op'] == 'between' || $filter['op'] == 'notBetween')){
+             $v = explode('-', $filter['value']);
+             $query->where()
+             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v[0], $v[1]);
+           }elseif($filter['op'] == 'in' || $filter['op'] == 'notIn') {
+             $v = explode(',', $filter['value']);
+             $query->where()
+             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v);
+           }else {
+             $query->where()
+             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
+           }
+         }
+       }
+     }
+
+     if(!empty($rsorts)){
+       foreach ($rsorts as $rsort) {
+         if($rsort['exposed'] == 'false'){
+           if($rsort['value'] == 'desc'){
+             $query->orderBy($rsort['field'], OrderBy::DESC, $view['view_relation_table']);
+           }else {
+             $query->orderBy($rsort['field'], OrderBy::ASC, $view['view_relation_table']);
+           }
+         }
+       }
+     }
+
+     $view['view_query'] = $this->builder->write($query);
+     $view['view_query_values'] = $this->builder->getValues();
+     return $view;
+   }
+
+  /**
    * api_get_view.
    *
    * @return string
@@ -483,8 +512,17 @@ public function views_settings(ServerRequest $request) {
    */
    public function api_get_view(ServerRequest $request, $vars) {
      $view = views_get_view_bypath(request_uri());
+     $parms = $request->getQueryParams();
      if($view){
        if(isset($view['view_query']) && isset($view['view_template'])){
+         if(!empty($view['view_filters'])){
+           foreach ($view['view_filters'] as $filter) {
+             if($filter['exposed'] == 'true' && !empty($parms)){
+               $view = $this->build_views_query($view, $parms, true);
+             }
+           }
+         }
+
          if($view['has_pager'] && !empty($view['view_pager'])){
            $page = isset($_GET['page']) ? $_GET['page'] : 1;
            $offset = (int)$view['view_pager']['offset'];
