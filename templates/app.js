@@ -427,21 +427,44 @@ var App = new Vue({
       var vm = this;
       var htmltext = '';
       var filtertext = '';
+      var sorttext = '';
 
       if(vm.view_filters.length != 0){
         for (var k = 0, length = vm.view_filters.length; k < length; k++) {
           if(vm.view_filters[k].exposed){
             filtertext += '  <div class="form-item">\n';
-            filtertext += '   <input type="text" name="'+vm.view_filters[k].exposed_setting.identifier+'" placeholder="'+vm.view_filters[k].exposed_setting.lable+'" class="filter-input" value="">'+vm.view_filters[k].exposed_setting.description+'\n';
+            filtertext += '   <label class="form-label">'+vm.view_filters[k].exposed_setting.lable+'：</label>\n';
+            filtertext += '   <input type="text" name="'+vm.view_filters[k].exposed_setting.identifier+'" class="filter-input" value="">'+vm.view_filters[k].exposed_setting.description+'\n';
             filtertext += '  </div>\n';
           }
         }
       }
 
-      if(filtertext != ''){
+      if(vm.view_sorts.length != 0){
+        sorttext += '  <div class="form-item">\n';
+        sorttext += '   <label class="form-label">{{ t("Sort By") }}：</label>\n';
+        sorttext += '   <select name="sort_by">\n';
+        for (var k = 0, length = vm.view_sorts.length; k < length; k++) {
+          if(vm.view_sorts[k].exposed){
+            sorttext += '   <option value="'+vm.view_sorts[k].field.substr(vm.view_sorts[k].field.indexOf(".")+1)+'">'+vm.view_sorts[k].exposed_setting.lable+'</option>\n';
+          }
+        }
+        sorttext += '   </select>\n';
+        sorttext += '  </div>\n';
+        sorttext += '  <div class="form-item">\n';
+        sorttext += '   <label class="form-label">{{ t("Order") }}：</label>\n';
+        sorttext += '   <select name="sort_order">\n';
+        sorttext += '    <option value="ASC">Asc</option>\n';
+        sorttext += '    <option value="DESC">Desc</option>\n';
+        sorttext += '   </select>\n';
+        sorttext += '  </div>\n';
+      }
+
+      if(filtertext != '' || sorttext != ''){
         htmltext += '<div class="views_expose_form">\n <form action="'+vm.view_path+'">\n';
         htmltext += filtertext;
-        htmltext += '  <button type="submit">{{ t("过滤搜索") }}</button>';
+        htmltext += sorttext;
+        htmltext += '  <button type="submit">{{ t("Filter") }}</button>';
         htmltext += ' </form>\n</div>\n';
       }
 

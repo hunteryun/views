@@ -445,7 +445,10 @@ public function views_settings(ServerRequest $request) {
 
      if(!empty($lsorts)){
        foreach ($lsorts as $lsort) {
-         if($lsort['exposed'] == 'false'){
+         if($from_exposed){
+           if($lsort['exposed'] == 'true' && isset($vars['sort_by']) && $vars['sort_by'] == $lsort['field'] && isset($vars['sort_order'])){
+             $lsort['value'] = strtolower($vars['sort_order']);
+           }
            if($lsort['value'] == 'desc'){
              $query->orderBy($lsort['field'], OrderBy::DESC);
            }else {
@@ -467,21 +470,22 @@ public function views_settings(ServerRequest $request) {
      if(!empty($view['view_filters'])){
        foreach ($view['view_filters'] as $filter) {
          if($from_exposed){
-           if($filter['exposed'] == 'true' && isset($vars[$filter['exposed_setting']['identifier']])){
+           if($filter['exposed'] == 'true' && isset($vars[$filter['exposed_setting']['identifier']]) && !empty($vars[$filter['exposed_setting']['identifier']])){
              $filter['value'] = $vars[$filter['exposed_setting']['identifier']];
-           }
-           $op = $filter['op'];
-           if(strpos($filter['value'],'-') !== false && ($filter['op'] == 'between' || $filter['op'] == 'notBetween')){
-             $v = explode('-', $filter['value']);
-             $query->where()
-             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v[0], $v[1]);
-           }elseif($filter['op'] == 'in' || $filter['op'] == 'notIn') {
-             $v = explode(',', $filter['value']);
-             $query->where()
-             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v);
-           }else {
-             $query->where()
-             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
+
+             $op = $filter['op'];
+             if(strpos($filter['value'],'-') !== false && ($filter['op'] == 'between' || $filter['op'] == 'notBetween')){
+               $v = explode('-', $filter['value']);
+               $query->where()
+               ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v[0], $v[1]);
+             }elseif($filter['op'] == 'in' || $filter['op'] == 'notIn') {
+               $v = explode(',', $filter['value']);
+               $query->where()
+               ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v);
+             }else {
+               $query->where()
+               ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
+             }
            }
          }
        }
@@ -489,7 +493,10 @@ public function views_settings(ServerRequest $request) {
 
      if(!empty($rsorts)){
        foreach ($rsorts as $rsort) {
-         if($rsort['exposed'] == 'false'){
+         if($from_exposed){
+           if($rsort['exposed'] == 'true' && isset($vars['sort_by']) && $vars['sort_by'] == $rsort['field'] && isset($vars['sort_order'])){
+             $rsort['value'] = strtolower($vars['sort_order']);
+           }
            if($rsort['value'] == 'desc'){
              $query->orderBy($rsort['field'], OrderBy::DESC, $view['view_relation_table']);
            }else {
@@ -517,7 +524,15 @@ public function views_settings(ServerRequest $request) {
        if(isset($view['view_query']) && isset($view['view_template'])){
          if(!empty($view['view_filters'])){
            foreach ($view['view_filters'] as $filter) {
-             if($filter['exposed'] == 'true' && !empty($parms)){
+             if($filter['exposed'] == 'true' && isset($parms[$filter['exposed_setting']['identifier']]) && !empty($parms[$filter['exposed_setting']['identifier']])){
+               $view = $this->build_views_query($view, $parms, true);
+             }
+           }
+         }
+
+         if(!empty($view['view_sorts'])){
+           foreach ($view['view_sorts'] as $sort) {
+             if($sort['exposed'] == 'true' && isset($parms['sort_by']) && $parms['sort_by'] == substr($sort['field'], strripos($sort['field'], '.')+1)){
                $view = $this->build_views_query($view, $parms, true);
              }
            }
@@ -533,9 +548,6 @@ public function views_settings(ServerRequest $request) {
              $pager['page'] = $page;
              $pager['size'] = (int)$view['view_pager']['display'];
              $pager['total'] = COUNT(db_query($view['view_query'], $view['view_query_values'])->fetchAll());
-             if($preview){
-               $pager['url'] = '/admin/views/add';
-             }
              $number_perpage = (int) $view['view_pager']['display'];
 
              theme()->getEnvironment()->addGlobal('pager', $pager);
