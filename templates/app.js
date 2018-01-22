@@ -364,8 +364,10 @@ var App = new Vue({
       }
 
       if(vm.tables[vm.view_table].relationship){
-        for (var i=0; i<vm.tables[vm.view_table].relationship.length; i++){
-          vm.relationships.push(vm.tables[vm.view_table].relationship[i].left.table);
+        for(var i in vm.tables[vm.view_table].relationship){
+          if (vm.tables[vm.view_table].relationship.hasOwnProperty(i)) {
+            vm.relationships.push(i);
+          }
         }
       }
   	},

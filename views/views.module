@@ -83,15 +83,6 @@ function _views_internal_tables() {
     $tables['category'] = array(
       'name' => 'category',
       'provider' => 'internal',
-      'join' => array(
-        'left' => array(
-          'table' => 'news',
-          'field' => 'nid'
-        ),
-        'right' => array(
-          'field' => 'nid'
-        )
-      ),
       'fields' => array(
         'cid' => array(
           'name' => 'Cid',
@@ -108,18 +99,67 @@ function _views_internal_tables() {
     );
   }
 
+  $tables['page'] = array(
+    'name' => 'page',
+    'provider' => 'internal',
+    'relationship' => array(
+      'user' => array(
+        'left' => array(
+          'field' => 'uid'
+        ),
+        'right' => array(
+          'field' => 'uid'
+        ),
+      ),
+    ),
+    'fields' => array(
+      'pid' => array(
+        'name' => 'Pid',
+        'help' => 'The Page ID.',
+        'sortable' => true,
+        'filter_type' => 'number',
+      ),
+      'title' => array(
+        'name' => 'Page title',
+        'help' => 'The Page title.',
+        'sortable' => true,
+        'filter_type' => 'string',
+      ),
+      'content' => array(
+        'name' => 'Page content',
+        'help' => 'The Page content.',
+        'filter_type' => 'string',
+      ),
+      'uid' => array(
+        'name' => 'Page uid',
+        'help' => 'The Page uid.',
+        'filter_type' => 'number',
+      ),
+      'status' => array(
+        'name' => 'Page status',
+        'help' => 'The Page status.',
+        'filter_type' => 'yes-no',
+      ),
+      'created' => array(
+        'name' => 'Page created',
+        'help' => 'The Page created.',
+        'sortable' => true,
+        'sorttype' => 'date',
+        'filter_type' => 'number',
+      ),
+      'updated' => array(
+        'name' => 'Page updated',
+        'help' => 'The Page updated.',
+        'sortable' => true,
+        'sorttype' => 'date',
+        'filter_type' => 'number',
+      ),
+    )
+  );
+
   $tables['user'] = array(
     'name' => 'user',
     'provider' => 'internal', // won't show up in external list.
-    'join' => array(
-      'left' => array(
-        'table' => 'news',
-        'field' => 'uid'
-      ),
-      'right' => array(
-        'field' => 'uid'
-      ),
-    ),
     'fields' => array(
       'uid' => array(
         'name' => 'Uid',
@@ -163,15 +203,6 @@ function _views_internal_tables() {
   $tables['user_roles'] = array(
     'name' => 'user_role',
     'provider' => 'internal', // won't show up in external list.
-    'join' => array(
-      'left' => array(
-        'table' => 'News',
-        'field' => 'uid'
-      ),
-      'right' => array(
-        'field' => 'uid'
-      ),
-    ),
     'fields' => array(
       'name' => array(
         'name' => 'Node Author Name',

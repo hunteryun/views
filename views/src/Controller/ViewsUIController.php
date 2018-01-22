@@ -461,9 +461,9 @@ public function views_settings(ServerRequest $request) {
      if($rfields){
        $query->innerJoin(
          $view['view_relation_table'], //join table
-         'uid', //origin table field used to join
-         'uid', //join column
-          $rfields
+         $tables[$view['view_table']]['relationship'][$view['view_relation_table']]['left']['field'], //origin table field used to join
+         $tables[$view['view_table']]['relationship'][$view['view_relation_table']]['right']['field'], //join column
+         $rfields
        );
      }
 
