@@ -90,7 +90,13 @@ public function views_settings(ServerRequest $request) {
     $view_machine_name = 'views_view_final_'.$view;
     $view_config = variable_get($view_machine_name);
     $tables = _views_get_tables();
-    return view('/admin/views-edit.html', array('tables' => $tables, 'view' => $view_config));
+    $phptojs = phptojs()->put(
+      array(
+        'edit_tables' => $tables,
+        'edit_view' => $view_config
+      )
+    );
+    return view('/admin/views-add.html', array('phptojs' => $phptojs));
   }
 
   /**

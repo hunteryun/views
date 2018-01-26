@@ -15,7 +15,9 @@
   <script src="theme/admin/assets/js/jquery.dropdown.js"></script>
   <script src="theme/admin/assets/js/sortable.min.js"></script>
   <script src="theme/admin/assets/js/vuedraggable.min.js"></script>
-  {!! phptojs()->put(['base_path' => base_path()])->getJsVars(); !!}
+  @if(isset($phptojs))
+  {!! $phptojs->getJsVars() !!}
+  @endif
 </head>
 <body>
   <div class="header">

@@ -66,6 +66,9 @@ var App = new Vue({
     this.initTablesList();
     this.initFilterOpList();
     this.initTemplatesList();
+    if(typeof(edit_view) !== 'undefined'){
+      this.initDefaultValue();
+    }
   },
   computed: {
     canPreview: function () {
@@ -86,6 +89,25 @@ var App = new Vue({
    }
   },
   methods: {
+    initDefaultValue: function() {
+      var vm = this;
+      vm.view_name = edit_view.view_name;
+      vm.view_machine_name = edit_view.view_machine_name;
+      vm.view_description = edit_view.view_description;
+      vm.view_table = edit_view.view_table;
+      vm.view_fields = edit_view.view_fields;
+      vm.has_pager = edit_view.has_pager === 'false' ? false : true;
+      vm.view_pager = edit_view.view_pager;
+      vm.view_template = edit_view.view_template;
+      vm.template_content = edit_view.template_content;
+      vm.overwrit_template = edit_view.overwrit_template;
+      vm.json_export = edit_view.json_export === 'false' ? false : true;
+      vm.view_path = edit_view.view_path;
+      if(edit_view.view_relation_table){
+        vm.view_relation_table = edit_view.view_relation_table;
+        vm.relationships.push(edit_view.view_relation_table);
+      }
+    },
     initViewsSetting: function() {
       var vm = this;
       vm.$http.get('admin/api/views/setting').then(function (response) {
@@ -105,6 +127,12 @@ var App = new Vue({
             layer.alert('init error！', {icon: 5});
           } else {
             vm.tables = response.body;
+            if(typeof(edit_view) !== 'undefined'){
+              vm.updateField();
+              if(edit_view.view_relation_table){
+                vm.addRelationshipFields();
+              }
+            }
           }
       }, function (response) {
           layer.alert('init error！', {icon: 5});
