@@ -30,6 +30,14 @@ views.viewsui_views_view_export:
   requirements:
     _permission: 'access admin page'
 
+views.viewsui_views_view_import:
+  path: '/admin/views/view/import'
+  defaults:
+    _controller: '\Hunter\views\Controller\ViewsUIController::views_view_import'
+    _title: 'Import view'
+  requirements:
+    _permission: 'access admin page'
+
 views.viewsui_views_view_edit:
   path: '/admin/views/view/{view}/edit'
   defaults:

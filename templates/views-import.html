@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>Views设置</title>
+  <title>Views导入</title>
   <base href="{{ base_path() }}">
   <link rel="stylesheet" href="theme/admin/assets/layui/css/layui.css">
   <link rel="stylesheet" href="theme/admin/assets/css/style.css">
@@ -22,10 +22,10 @@
           var layer = layui.layer;
 
           //监听提交
-          form.on('submit(ViewsConfigUpdate)', function(data) {
+          form.on('submit(ViewsImport)', function(data) {
               $.ajax({
                   type: "POST",
-                  url: "admin/views/settings", //后台程序地址
+                  url: "admin/views/view/import", //后台程序地址
                   data: data.field, //需要post的数据
                   success: function(msg) {
                     var index = parent.layer.getFrameIndex(window.name);

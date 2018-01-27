@@ -11,6 +11,7 @@
 </head>
 <body>
   <button class="layui-btn  layui-btn-small layui-btn" onclick="addView()">添加view</button>
+  <button class="layui-btn  layui-btn-small layui-btn" onclick="importView()">导入</button>
   <button class="layui-btn  layui-btn-small layui-btn" onclick="setView()">设置</button>
   <table class="layui-table" lay-skin="line">
     <colgroup>
@@ -37,8 +38,8 @@
         <td>{{ $v['json_export'] == 'true' ? 'API' : 'Page' }}</td>
         <td><a href="{{ $v['view_path'] }}" target="_blank">{{ $v['view_path'] }}</a></td>
         <td>
-          <a class="layui-btn layui-btn-xs" href="admin/views/view/{{ $v['view_name'] }}/export">导出</a>
           <a class="layui-btn layui-btn-xs" onclick="editView('{{ $v['view_name'] }}')">编辑</a>
+          <a class="layui-btn layui-btn-xs" href="admin/views/view/{{ $v['view_name'] }}/export">导出</a>
           <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="delView('{{ $v['view_name'] }}')">删除</a>
         </td>
       </tr>
@@ -117,6 +118,42 @@
               });
           });
       });
+  }
+
+  function importView() {
+    layui.use(['layer', 'form'], function(){
+      var layer = layui.layer
+      ,form = layui.form
+      ,$ = layui.jquery;
+
+      var index = layer.open({
+          offset: '100px',
+          type: 2,
+          fix: false,
+          maxmin: true,
+          shadeClose: true,
+          shade:0.4,
+          title: 'Views导入',
+          content: "admin/views/view/import",
+          end: function() {
+              var iframe_status = $("#iframe_status").val();
+              if (iframe_status == '1') {
+                  layer.msg('导入成功!', {
+                      icon: 1,
+                      time: 1000,
+                      shade: 0.1
+                  }, function() {
+                      location.reload();
+                  });
+              } else if (iframe_status == '0') {
+                  layer.msg('导入失败!', {
+                      icon: 5
+                  });
+              }
+          }
+      });
+      layer.full(index);
+    });
   }
 
   function setView(view) {

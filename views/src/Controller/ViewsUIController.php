@@ -113,6 +113,44 @@ public function views_settings(ServerRequest $request) {
   }
 
   /**
+   * views_view_import.
+   *
+   * @return string
+   *   Return views_view_import string.
+   */
+  public function views_view_import(ServerRequest $request) {
+    if($parms = $request->getParsedBody()){
+      $import_yml = Yaml::decode($parms['views_import']);
+      if(is_array($import_yml)){
+        if(!empty($parms['new_name'])){
+          $import_yml['view_name'] = $parms['new_name'];
+        }
+        $this->views_view_save($import_yml);
+        return true;
+      }
+    }
+
+    $form['views_import'] = array(
+      '#type' => 'textarea',
+      '#title' => '粘贴你的配置',
+      '#required' => TRUE,
+      '#attributes' => array('id' => 'views_import', 'rows' => 20),
+    );
+    $form['new_name'] = array(
+      '#type' => 'textfield',
+      '#title' => '新名称',
+      '#maxlength' => 255,
+    );
+    $form['save'] = array(
+     '#type' => 'submit',
+     '#value' => t('导入'),
+     '#attributes' => array('lay-submit' => '', 'lay-filter' => 'ViewsImport'),
+    );
+
+    return view('/admin/views-import.html', array('form' => $form));
+  }
+
+  /**
    * views_view_save.
    *
    * @return string
