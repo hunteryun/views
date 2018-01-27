@@ -100,12 +100,17 @@ var App = new Vue({
       vm.view_pager = edit_view.view_pager;
       vm.view_template = edit_view.view_template;
       vm.template_content = edit_view.template_content;
-      vm.overwrit_template = edit_view.overwrit_template;
+      vm.overwrit_template = edit_view.overwrit_template === 'false' ? false : true;
       vm.json_export = edit_view.json_export === 'false' ? false : true;
       vm.view_path = edit_view.view_path;
       if(edit_view.view_relation_table){
         vm.view_relation_table = edit_view.view_relation_table;
-        vm.relationships.push(edit_view.view_relation_table);
+      }
+      if(edit_view.view_filters){
+        vm.view_filters = edit_view.view_filters;
+      }
+      if(edit_view.view_sorts){
+        vm.view_sorts = edit_view.view_sorts;
       }
     },
     initViewsSetting: function() {
@@ -392,11 +397,14 @@ var App = new Vue({
       }
 
       if(vm.tables[vm.view_table].relationship){
+        vm.relationships = [];
         for(var i in vm.tables[vm.view_table].relationship){
           if (vm.tables[vm.view_table].relationship.hasOwnProperty(i)) {
             vm.relationships.push(i);
           }
         }
+      }else {
+        vm.relationships = [];
       }
   	},
     updateFilterOp: function() {
