@@ -420,8 +420,8 @@ var App = new Vue({
       var vm = this;
       var select_table = vm.new_sort_field.split(".")[0];
       var select_filed = vm.new_sort_field.split(".")[1];
-      if(vm.tables[select_table].fields[select_filed].sorttype){
-        vm.select_field_sort_type = vm.tables[select_table].fields[select_filed].sorttype;
+      if(vm.tables[select_table].fields[select_filed].sort_type){
+        vm.select_field_sort_type = vm.tables[select_table].fields[select_filed].sort_type;
       }else {
         vm.select_field_sort_type = '';
       }

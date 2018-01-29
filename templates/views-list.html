@@ -40,6 +40,7 @@
         <td>
           <a class="layui-btn layui-btn-xs" onclick="editView('{{ $v['view_name'] }}')">编辑</a>
           <a class="layui-btn layui-btn-xs" href="admin/views/view/{{ $v['view_name'] }}/export">导出</a>
+          <a class="layui-btn layui-btn-xs" onclick="copyView('{{ $v['view_name'] }}')">克隆</a>
           <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="delView('{{ $v['view_name'] }}')">删除</a>
         </td>
       </tr>
@@ -83,6 +84,25 @@
           shade:0.4,
           title: '编辑view',
           content: "admin/views/view/"+view+'/edit'
+      });
+      layer.full(index);
+    });
+  }
+
+  function copyView(view) {
+    layui.use(['layer', 'form'], function(){
+      var layer = layui.layer
+      ,form = layui.form;
+
+      var index = layer.open({
+          offset: '100px',
+          type: 2,
+          fix: false,
+          maxmin: true,
+          shadeClose: true,
+          shade:0.4,
+          title: '克隆view',
+          content: "admin/views/view/"+view+'/copy'
       });
       layer.full(index);
     });

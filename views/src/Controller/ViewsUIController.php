@@ -100,6 +100,29 @@ public function views_settings(ServerRequest $request) {
   }
 
   /**
+   * views_view_edit.
+   *
+   * @return string
+   *   Return views_view_edit string.
+   */
+  public function views_view_copy($view) {
+    $view_machine_name = 'views_view_final_'.$view;
+    $view_config = variable_get($view_machine_name);
+    if(!empty($view_config['view_name'])){
+      $view_config['view_name'] = 'New '.$view_config['view_name'];
+      $view_config['view_machine_name'] = $this->string->createMachineName($view_config['view_name']);
+    }
+    $tables = _views_get_tables();
+    $phptojs = phptojs()->put(
+      array(
+        'edit_tables' => $tables,
+        'edit_view' => $view_config
+      )
+    );
+    return view('/admin/views-add.html', array('phptojs' => $phptojs));
+  }
+
+  /**
    * views_view_export.
    *
    * @return string

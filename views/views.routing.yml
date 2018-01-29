@@ -46,6 +46,14 @@ views.viewsui_views_view_edit:
   requirements:
     _permission: 'access admin page'
 
+views.viewsui_views_view_copy:
+  path: '/admin/views/view/{view}/copy'
+  defaults:
+    _controller: '\Hunter\views\Controller\ViewsUIController::views_view_copy'
+    _title: 'Copy view'
+  requirements:
+    _permission: 'access admin page'
+
 views.viewsui_views_view_delete:
   path: '/admin/views/view/{view}/delete'
   defaults:
