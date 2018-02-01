@@ -8,10 +8,13 @@ use Hunter\Core\Serialization\Yaml;
  */
 function views_init() {
   global $app;
+  static $view_paths = array();
   $route = '';
   $all_views = views_get_all();
+  $all_router = $app->getContainer()->get('routeTitles');
   foreach ($all_views as $view) {
-    if(isset($view['view_path']) && $view['view_path']){
+    if(isset($view['view_path']) && $view['view_path'] && !isset($all_router[$view['view_path']]) && !isset($view_paths[$view['view_path']])){
+      $view_paths[$view['view_path']] = $view['view_name'];
       $route = $app->getRoutes()->map(['GET','POST'], $view['view_path'], '\Hunter\views\Controller\ViewsUIController::api_get_view');
     }
 
