@@ -184,7 +184,7 @@
               <tr>
                 <td class="bsIE">
                   <select class="form-select" v-model="new_sort_field" @change="updateSortType">
-                    <option v-for="(field, key) in fields" v-if="field.sortable" :value="key">@{{ field.name }}</option>
+                    <option v-for="(field, key) in fields" :value="key">@{{ field.name }}</option>
                   </select>
                 </td>
                 <td class="bsFirefox">

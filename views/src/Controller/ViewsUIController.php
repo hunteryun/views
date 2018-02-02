@@ -181,6 +181,16 @@ public function views_settings(ServerRequest $request) {
    */
   public function views_view_save($parms) {
     if($parms) {
+      if(isset($parms['view_filters']) && !empty($parms['view_filters'])){
+        foreach ($parms['view_filters'] as $key => $item) {
+          $parms['view_filters'][$key]['exposed'] = (bool) $parms['view_filters'][$key]['exposed'];
+        }
+      }
+      if(isset($parms['view_sorts']) && !empty($parms['view_sorts'])){
+        foreach ($parms['view_sorts'] as $key => $item) {
+          $parms['view_sorts'][$key]['exposed'] = (bool) $parms['view_sorts'][$key]['exposed'];
+        }
+      }
       $view_machine_name = $this->string->createMachineName($parms['view_name']);
       variable_set('views_view_'.$parms['type'].'_'.$view_machine_name, $parms);
     }

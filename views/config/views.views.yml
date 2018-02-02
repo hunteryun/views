@@ -19,8 +19,6 @@ views:
         filter_type: 'string'
       content:
         name: '页面内容'
-      image:
-        name: '图片'
       status:
         name: '状态'
         filter_type: 'yes-no'
