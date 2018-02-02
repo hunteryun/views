@@ -224,6 +224,9 @@ var App = new Vue({
       vm.new_filter_exposed_identifier = filter.exposed_setting.identifier;
       vm.editedFilter = filter;
       vm.edit_filter_mode = true;
+      if(vm.filter_ops.length == 0){
+        vm.updateFilterOp();
+      }
     },
     doneEditFilter: function (exposed) {
       var vm = this;

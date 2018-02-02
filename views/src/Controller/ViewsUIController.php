@@ -549,20 +549,19 @@ public function views_settings(ServerRequest $request) {
          if($from_exposed || $filter['exposed'] == 'false'){
            if($filter['exposed'] == 'true' && isset($vars[$filter['exposed_setting']['identifier']]) && !empty($vars[$filter['exposed_setting']['identifier']])){
              $filter['value'] = $vars[$filter['exposed_setting']['identifier']];
-
-             $op = $filter['op'];
-             if(strpos($filter['value'],'-') !== false && ($filter['op'] == 'between' || $filter['op'] == 'notBetween')){
-               $v = explode('-', $filter['value']);
-               $query->where()
-               ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v[0], $v[1]);
-             }elseif($filter['op'] == 'in' || $filter['op'] == 'notIn') {
-               $v = explode(',', $filter['value']);
-               $query->where()
-               ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v);
-             }else {
-               $query->where()
-               ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
-             }
+           }
+           $op = $filter['op'];
+           if(strpos($filter['value'],'-') !== false && ($filter['op'] == 'between' || $filter['op'] == 'notBetween')){
+             $v = explode('-', $filter['value']);
+             $query->where()
+             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v[0], $v[1]);
+           }elseif($filter['op'] == 'in' || $filter['op'] == 'notIn') {
+             $v = explode(',', $filter['value']);
+             $query->where()
+             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $v);
+           }else {
+             $query->where()
+             ->$op(substr($filter['field'], strrpos($filter['field'],'.')+1), $filter['value']);
            }
          }
        }
