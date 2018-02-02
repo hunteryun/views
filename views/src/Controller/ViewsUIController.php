@@ -183,12 +183,12 @@ public function views_settings(ServerRequest $request) {
     if($parms) {
       if(isset($parms['view_filters']) && !empty($parms['view_filters'])){
         foreach ($parms['view_filters'] as $key => $item) {
-          $parms['view_filters'][$key]['exposed'] = (bool) $parms['view_filters'][$key]['exposed'];
+          $parms['view_filters'][$key]['exposed'] = $parms['view_filters'][$key]['exposed'] == 'false' ? false : true;
         }
       }
       if(isset($parms['view_sorts']) && !empty($parms['view_sorts'])){
         foreach ($parms['view_sorts'] as $key => $item) {
-          $parms['view_sorts'][$key]['exposed'] = (bool) $parms['view_sorts'][$key]['exposed'];
+          $parms['view_sorts'][$key]['exposed'] = $parms['view_sorts'][$key]['exposed'] == 'false' ? false : true;
         }
       }
       $view_machine_name = $this->string->createMachineName($parms['view_name']);
@@ -495,7 +495,7 @@ public function views_settings(ServerRequest $request) {
      }
 
      $tables = _views_get_tables();
-     $lfields = $rfields = array();
+     $lfields = $rfields = $lsorts = $rsorts = array();
 
      foreach ($view['view_fields'] as $key => $field) {
        if(substr($field,0,strrpos($field,'.')) == $view['view_table']){
@@ -522,7 +522,7 @@ public function views_settings(ServerRequest $request) {
 
      if(!empty($lsorts)){
        foreach ($lsorts as $lsort) {
-         if($from_exposed){
+         if($from_exposed || $lsort['exposed'] == 'false'){
            if($lsort['exposed'] == 'true' && isset($vars['sort_by']) && $vars['sort_by'] == $lsort['field'] && isset($vars['sort_order'])){
              $lsort['value'] = strtolower($vars['sort_order']);
            }
@@ -546,7 +546,7 @@ public function views_settings(ServerRequest $request) {
 
      if(!empty($view['view_filters'])){
        foreach ($view['view_filters'] as $filter) {
-         if($from_exposed){
+         if($from_exposed || $filter['exposed'] == 'false'){
            if($filter['exposed'] == 'true' && isset($vars[$filter['exposed_setting']['identifier']]) && !empty($vars[$filter['exposed_setting']['identifier']])){
              $filter['value'] = $vars[$filter['exposed_setting']['identifier']];
 
@@ -570,7 +570,7 @@ public function views_settings(ServerRequest $request) {
 
      if(!empty($rsorts)){
        foreach ($rsorts as $rsort) {
-         if($from_exposed){
+         if($from_exposed || $rsort['exposed'] == 'false'){
            if($rsort['exposed'] == 'true' && isset($vars['sort_by']) && $vars['sort_by'] == $rsort['field'] && isset($vars['sort_order'])){
              $rsort['value'] = strtolower($vars['sort_order']);
            }

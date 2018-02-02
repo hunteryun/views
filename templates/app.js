@@ -24,6 +24,7 @@ var App = new Vue({
     view_permissions: [],
     settings: [],
     has_pager: false,
+    has_exposed_sort: false,
     tables: [],
     templates: [],
     template_content: '',
@@ -97,6 +98,7 @@ var App = new Vue({
       vm.view_table = edit_view.view_table;
       vm.view_fields = edit_view.view_fields;
       vm.has_pager = edit_view.has_pager === 'false' ? false : true;
+      vm.has_exposed_sort = edit_view.has_exposed_sort === 'false' ? false : true;
       vm.view_pager = edit_view.view_pager;
       vm.view_template = edit_view.view_template;
       vm.template_content = edit_view.template_content;
@@ -270,7 +272,10 @@ var App = new Vue({
           layer.alert('Please select the sort field！', {icon: 5});
           return;
         }
+      }else {
+        vm.has_exposed_sort = treu;
       }
+
       vm.view_sorts.push({
         field: vm.new_sort_field,
         value: vm.new_sort_value,
@@ -366,6 +371,7 @@ var App = new Vue({
         'view_filters': vm.view_filters,
         'view_sorts': vm.view_sorts,
         'has_pager': vm.has_pager,
+        'has_exposed_sort': vm.has_exposed_sort,
         'view_pager': vm.view_pager,
         'view_template': vm.view_template,
         'template_content': vm.template_content,
@@ -479,7 +485,7 @@ var App = new Vue({
         }
       }
 
-      if(vm.view_sorts.length != 0){
+      if(vm.has_exposed_sort){
         sorttext += '  <div class="form-group">\n';
         sorttext += '   <label class="form-label">{{ t("Sort By") }}：</label>\n';
         sorttext += '   <select name="sort_by" class="form-control">\n';
