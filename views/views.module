@@ -33,7 +33,7 @@ function views_get_view_bypath($path) {
     if(isset($view['view_path']) && $view['view_path'] == $path){
       return $view;
     }
-    if($curpath = preg_replace("/\{.*\}/", "([^/]+)", $view['view_path'])){
+    if($curpath = preg_replace("/\{[^\/]*\}/", "([^/]+)", $view['view_path'])){
       if(preg_match("~^(?|".$curpath.")$~", $path, $matches)){
         return $view;
       }

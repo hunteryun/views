@@ -632,11 +632,13 @@ public function views_settings(ServerRequest $request) {
            $view['view_query'] = $view['view_query']. ' LIMIT ' . $offset . ', ' . $number_perpage;
          }
 
-         foreach ($view['view_query_values'] as $key => $value) {
-           if(strpos($value,':::') !== false){
-             $v = explode(':::', $value);
-             $v[0] = substr($v[0], strripos($v[0], '.')+1);
-             $view['view_query_values'][$key] = $vars[$v[0]];
+         if(!empty($view['view_query_values']) && !empty($vars)){
+           foreach ($view['view_query_values'] as $key => $value) {
+             if(strpos($value,':::') !== false){
+               $v = explode(':::', $value);
+               $v[0] = substr($v[0], strripos($v[0], '.')+1);
+               $view['view_query_values'][$key] = $vars[$v[0]];
+             }
            }
          }
 

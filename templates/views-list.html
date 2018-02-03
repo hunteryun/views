@@ -38,10 +38,10 @@
         <td>{{ $v['json_export'] == 'true' ? 'API' : 'Page' }}</td>
         <td><a href="{{ $v['view_path'] }}" target="_blank">{{ $v['view_path'] }}</a></td>
         <td>
-          <a class="layui-btn layui-btn-xs" onclick="editView('{{ $v['view_name'] }}')">编辑</a>
-          <a class="layui-btn layui-btn-xs" href="admin/views/view/{{ $v['view_name'] }}/export">导出</a>
-          <a class="layui-btn layui-btn-xs" onclick="copyView('{{ $v['view_name'] }}')">克隆</a>
-          <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="delView('{{ $v['view_name'] }}')">删除</a>
+          <a class="layui-btn layui-btn-xs" onclick="editView('{{ $v['view_machine_name'] }}')">编辑</a>
+          <a class="layui-btn layui-btn-xs" href="admin/views/view/{{ $v['view_machine_name'] }}/export">导出</a>
+          <a class="layui-btn layui-btn-xs" onclick="copyView('{{ $v['view_machine_name'] }}')">克隆</a>
+          <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="delView('{{ $v['view_machine_name'] }}')">删除</a>
         </td>
       </tr>
       @endforeach
