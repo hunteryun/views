@@ -23,6 +23,7 @@
     <thead>
       <tr>
         <th>名称</th>
+        <th>机器名</th>
         <th>描述</th>
         <th>类型</th>
         <th>路径</th>
@@ -34,8 +35,9 @@
       @foreach ($list as $v)
       <tr>
         <td>{{ $v['view_name'] }}</td>
+        <td>{{ $v['view_machine_name'] }}</td>
         <td>{{ $v['view_description'] }}</td>
-        <td>{{ $v['json_export'] == 'true' ? 'API' : 'Page' }}</td>
+        <td>{{ $v['json_export'] == 'true' ? 'API' : !empty($v['view_path']) ? 'Page' : 'Block' }}</td>
         <td><a href="{{ $v['view_path'] }}" target="_blank">{{ $v['view_path'] }}</a></td>
         <td>
           <a class="layui-btn layui-btn-xs" onclick="editView('{{ $v['view_machine_name'] }}')">编辑</a>

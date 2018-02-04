@@ -111,6 +111,7 @@ public function views_settings(ServerRequest $request) {
     if(!empty($view_config['view_name'])){
       $view_config['view_name'] = 'New '.$view_config['view_name'];
       $view_config['view_machine_name'] = $this->string->createMachineName($view_config['view_name']);
+      $view_config['view_template'] = '';
     }
     $tables = _views_get_tables();
     $phptojs = phptojs()->put(
@@ -645,7 +646,12 @@ public function views_settings(ServerRequest $request) {
          $result = db_query($view['view_query'], $view['view_query_values'])->fetchAll();
          if(!empty($result)) {
            if($view['json_export'] == 'false'){
-             $output = theme()->render($view['view_template'], array('viewdata' => $result, 'parms' => $parms));
+             $data = array('viewdata' => $result, 'parms' => $parms);
+             if(count($result) == 1){
+               $final_result = (array) reset($result);
+               $data = array_merge($data, $final_result);
+             }
+             $output = theme()->render($view['view_template'], $data);
              return $output;
            }else{
              return new JsonResponse($result);
