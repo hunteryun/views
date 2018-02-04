@@ -633,10 +633,6 @@ public function views_settings(ServerRequest $request) {
            $view['view_query'] = $view['view_query']. ' LIMIT ' . $offset . ', ' . $number_perpage;
          }
 
-         $page_title = isset($view['view_title']) ? $view['view_title'] : $view['view_name'];
-
-         theme()->getEnvironment()->addGlobal('page_title', $page_title);
-
          if(!empty($view['view_query_values']) && !empty($vars)){
            foreach ($view['view_query_values'] as $key => $value) {
              if(strpos($value,':::') !== false){
@@ -649,6 +645,16 @@ public function views_settings(ServerRequest $request) {
 
          $result = db_query($view['view_query'], $view['view_query_values'])->fetchAll();
          if(!empty($result)) {
+           $page_title = $view['view_name'];
+           if(isset($view['view_title']) && !empty($view['view_title'])){
+             if(module_exists('token')){
+               $page_title = token_replace($view['view_title'], $result);
+             }else {
+               $page_title = $view['view_title'];
+             }
+           }
+           theme()->getEnvironment()->addGlobal('page_title', $page_title);
+
            if($view['json_export'] == 'false'){
              $data = array('viewdata' => $result, 'parms' => $parms);
              if(count($result) == 1){
