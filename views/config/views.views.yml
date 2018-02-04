@@ -9,6 +9,12 @@ views:
         name: '名称'
         filter_type: 'string'
   page:
+    relationship:
+      user:
+        left:
+          field: 'uid'
+        right:
+          field: 'uid'
     fields:
       pid:
         name: '页面ID'
