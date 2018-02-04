@@ -633,6 +633,10 @@ public function views_settings(ServerRequest $request) {
            $view['view_query'] = $view['view_query']. ' LIMIT ' . $offset . ', ' . $number_perpage;
          }
 
+         $page_title = isset($view['view_title']) ? $view['view_title'] : $view['view_name'];
+
+         theme()->getEnvironment()->addGlobal('page_title', $page_title);
+
          if(!empty($view['view_query_values']) && !empty($vars)){
            foreach ($view['view_query_values'] as $key => $value) {
              if(strpos($value,':::') !== false){

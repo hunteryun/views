@@ -8,6 +8,7 @@ var App = new Vue({
   data: {
     view_name: '',
     view_machine_name: 'default',
+    view_title: '',
     view_description: '',
     view_table: '',
     view_fields: [],
@@ -94,6 +95,7 @@ var App = new Vue({
       var vm = this;
       vm.view_name = edit_view.view_name;
       vm.view_machine_name = edit_view.view_machine_name;
+      vm.view_title = edit_view.view_title;
       vm.view_description = edit_view.view_description;
       vm.view_table = edit_view.view_table;
       vm.view_fields = edit_view.view_fields;
@@ -367,6 +369,7 @@ var App = new Vue({
       vm.$http.post('admin/api/save-view', {
         'view_name': vm.view_name,
         'view_machine_name': vm.view_machine_name,
+        'view_title': vm.view_title,
         'view_description': vm.view_description,
         'view_table': vm.view_table,
         'view_relation_table': vm.view_relation_table,
@@ -551,8 +554,9 @@ var App = new Vue({
         break;
       case 'html5':
         htmltext += '<!DOCTYPE html>\n<html lang="en">\n<head>\n';
-        htmltext += '  <meta charset="UTF-8">\n  <title>'+vm.view_name+'</title>\n';
-        htmltext += '</head>\n<body>\n';
+        htmltext += '  <meta charset="UTF-8">\n  <title>';
+        htmltext += vm.view_title ? vm.view_title : vm.view_name;
+        htmltext += '</title>\n</head>\n<body>\n';
         htmltext += topformtext;
         if(vm.view_fields != []){
           htmltext += '  @foreach($viewdata as $item)\n';
